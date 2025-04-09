@@ -1,6 +1,6 @@
+import 'package:ai_pt/src/workout_creation/workout_creation_view.dart';
 import 'package:flutter/material.dart';
 
-import 'dashboard/dashboard_item_view.dart';
 import 'dashboard/dashboard_view.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
@@ -46,8 +46,8 @@ class MyApp extends StatelessWidget {
                 switch (routeSettings.name) {
                   case SettingsView.routeName:
                     return SettingsView(controller: settingsController);
-                  case SampleItemDetailsView.routeName:
-                    return const SampleItemDetailsView();
+                  case WorkoutCreationView.routeName:
+                    return const WorkoutCreationView();
                   case Dashboard.routeName:
                   default:
                     return const Dashboard();
