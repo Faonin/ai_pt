@@ -34,4 +34,17 @@ class CustomAssistantService {
       return "$e";
     }
   }
+
+  Future<String> getADescriptionForAWorkout(List<Map<String, dynamic>> workout) async {
+    List userMessage = [
+      {
+        "role": "user",
+        "content":
+            "JSON format {description: answser in one big descripting string that could be used to generate workouts, that does not add more than has not been agreed} User input: $workout"
+      }
+    ];
+    String response = await talkToChatGPT(userMessage);
+    print(response);
+    return response;
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ai_pt/src/ai_features/chat_messager.dart';
 
 class WorkoutCreationView extends StatefulWidget {
   const WorkoutCreationView({super.key});
@@ -27,6 +28,11 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
       'options': ['Easy', 'Medium', 'Hard']
     },
     {
+      'type': 'dropdown',
+      'question': 'How many days a week do you wanna workout:',
+      'options': ['1', '2', '3', '4', '5', '6', '7']
+    },
+    {
       'type': 'multiple',
       'question': 'Choose warm-up duration:',
       'options': ['5 minutes', '10 minutes', '15 minutes', 'No warm-up']
@@ -35,9 +41,11 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
 
   int _currentQuestionIndex = 0;
   String? _dropdownValue;
+  List<Map<String, dynamic>> answeredQuestions = [];
 
-  void _nextQuestion() {
+  void _nextQuestion(Map<String, dynamic> answeredQuestion) {
     setState(() {
+      answeredQuestions.add(answeredQuestion);
       _currentQuestionIndex++;
       _dropdownValue = null;
     });
@@ -46,6 +54,7 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
   @override
   Widget build(BuildContext context) {
     if (_currentQuestionIndex >= _questions.length) {
+      CustomAssistantService().getADescriptionForAWorkout(answeredQuestions);
       return Scaffold(
         appBar: AppBar(
           title: const Text('Workout Creation'),
@@ -79,7 +88,13 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
               setState(() {
                 _dropdownValue = value;
               });
-              Future.delayed(const Duration(milliseconds: 500), _nextQuestion);
+              Future.delayed(
+                const Duration(milliseconds: 500),
+                () => _nextQuestion({
+                  "question": current["question"],
+                  "answer": value,
+                }),
+              );
             },
           ),
         ],
@@ -97,7 +112,10 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 child: ElevatedButton(
-                  onPressed: _nextQuestion,
+                  onPressed: () => _nextQuestion({
+                    "question": current["question"],
+                    "answer": option,
+                  }),
                   child: Text(option),
                 ),
               );
