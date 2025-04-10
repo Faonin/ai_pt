@@ -1,4 +1,3 @@
-import 'package:ai_pt/src/workout_creation/workout_creation_view.dart';
 import 'package:flutter/material.dart';
 import 'settings_controller.dart';
 
@@ -31,10 +30,12 @@ class SettingsView extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () {
+                    /*
                     Navigator.restorablePushNamed(
                       (context),
                       WorkoutCreationView.routeName,
                     );
+                    */
                   },
                   child: const Text('Test feature'),
                 ),

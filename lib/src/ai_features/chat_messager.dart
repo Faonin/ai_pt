@@ -47,5 +47,4 @@ class CustomAssistantService {
     print(response);
     return response;
   }
-
 }

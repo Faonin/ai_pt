@@ -55,6 +55,7 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
   Widget build(BuildContext context) {
     if (_currentQuestionIndex >= _questions.length) {
       CustomAssistantService().getADescriptionForAWorkout(answeredQuestions);
+
       return Scaffold(
         appBar: AppBar(
           title: const Text('Workout Creation'),
@@ -89,7 +90,7 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
                 _dropdownValue = value;
               });
               Future.delayed(
-                const Duration(milliseconds: 500),
+                const Duration(milliseconds: 300),
                 () => _nextQuestion({
                   "question": current["question"],
                   "answer": value,

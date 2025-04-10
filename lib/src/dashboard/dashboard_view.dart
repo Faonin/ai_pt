@@ -1,14 +1,15 @@
+import 'package:ai_pt/src/dashboard/dashboard_details.dart';
 import 'package:flutter/material.dart';
 
 import '../settings/settings_view.dart';
 import 'dashboard_item_class.dart';
-import 'dashboard_item_view.dart';
+import '../workout_overveiw/workout_overview.dart';
 
 /// Displays a list of SampleItems.
 class Dashboard extends StatelessWidget {
   const Dashboard({
     super.key,
-    this.items = const [SampleItem("Stregnth"), SampleItem("Cardio"), SampleItem("Mobility")],
+    this.items = const [SampleItem("Your Gains"), SampleItem("Your Weight"), SampleItem("Your Mobility")],
   });
 
   static const routeName = '/';
@@ -49,18 +50,15 @@ class Dashboard extends StatelessWidget {
           final item = items[index];
 
           return ListTile(
-            title: Text('Workout ${item.id}'),
+            title: Text('Dashboard item: ${item.id}'),
             leading: const CircleAvatar(
               // Display the Flutter Logo image asset.
               foregroundImage: AssetImage('assets/images/flutter_logo.png'),
             ),
             onTap: () {
-              // Navigate to the details page. If the user leaves and returns to
-              // the app after it has been killed while running in the
-              // background, the navigation stack is restored.
               Navigator.restorablePushNamed(
                 context,
-                WorkoutView.routeName,
+                DashboardDetails.routeName,
               );
             },
           );
@@ -71,14 +69,14 @@ class Dashboard extends StatelessWidget {
         width: 350,
         child: FloatingActionButton(
           onPressed: () {
-            Navigator.restorablePushNamed(context, WorkoutView.routeName);
+            Navigator.restorablePushNamed(context, WorkoutOverview.routeName);
           },
           tooltip: 'Start Workout',
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(16),
           ),
           child: FittedBox(
-            child: const Text("Start Wokrout"),
+            child: const Text("Start Workout"),
           ),
         ),
       ),
