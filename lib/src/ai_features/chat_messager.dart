@@ -19,7 +19,7 @@ class CustomAssistantService {
           "response_format": {"type": "json_object"},
           "messages": userMessage,
           "max_tokens": 1100,
-          "temperature": 0.85,
+          "temperature": 0.9,
         }),
       );
 
@@ -40,11 +40,12 @@ class CustomAssistantService {
       {
         "role": "user",
         "content":
-            "JSON format {description: answser in one big descripting string that could be used to generate workouts, that does not add more than has not been agreed} User input: $workout"
+            "JSON format {description: answer in one big descriptive string that will be included in a promt for ChatGTP to generate workouts, that does not add more than has not been agreed and encourages progressive overload} User input: $workout"
       }
     ];
     String response = await talkToChatGPT(userMessage);
     print(response);
     return response;
   }
+
 }

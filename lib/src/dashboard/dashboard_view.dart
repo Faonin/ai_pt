@@ -8,7 +8,7 @@ import 'dashboard_item_view.dart';
 class Dashboard extends StatelessWidget {
   const Dashboard({
     super.key,
-    this.items = const [SampleItem(1), SampleItem(2), SampleItem(3)],
+    this.items = const [SampleItem("Stregnth"), SampleItem("Cardio"), SampleItem("Mobility")],
   });
 
   static const routeName = '/';
@@ -49,7 +49,7 @@ class Dashboard extends StatelessWidget {
           final item = items[index];
 
           return ListTile(
-            title: Text('SampleItem ${item.id}'),
+            title: Text('Workout ${item.id}'),
             leading: const CircleAvatar(
               // Display the Flutter Logo image asset.
               foregroundImage: AssetImage('assets/images/flutter_logo.png'),
@@ -60,11 +60,27 @@ class Dashboard extends StatelessWidget {
               // background, the navigation stack is restored.
               Navigator.restorablePushNamed(
                 context,
-                SampleItemDetailsView.routeName,
+                WorkoutView.routeName,
               );
             },
           );
         },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: SizedBox(
+        width: 350,
+        child: FloatingActionButton(
+          onPressed: () {
+            Navigator.restorablePushNamed(context, WorkoutView.routeName);
+          },
+          tooltip: 'Start Workout',
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: FittedBox(
+            child: const Text("Start Wokrout"),
+          ),
+        ),
       ),
     );
   }

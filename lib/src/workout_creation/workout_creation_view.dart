@@ -15,7 +15,7 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
     {
       'type': 'multiple',
       'question': 'Select your workout type:',
-      'options': ['Cardio', 'Strength', 'Flexibility']
+      'options': ['Cardio', 'Strength', 'Flexibility', 'Muscle Growth']
     },
     {
       'type': 'multiple',
