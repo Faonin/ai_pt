@@ -1,12 +1,12 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-class SQLiteManager {
-  static final SQLiteManager _instance = SQLiteManager._internal();
+class TranningLogsManger {
+  static final TranningLogsManger _instance = TranningLogsManger._internal();
 
-  factory SQLiteManager() => _instance;
+  factory TranningLogsManger() => _instance;
 
-  SQLiteManager._internal();
+  TranningLogsManger._internal();
 
   Database? _database;
 

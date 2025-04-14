@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ai_pt/src/ai_features/chat_messager.dart';
+import 'package:ai_pt/src/workout_creation/workout_manager.dart';
 
 class WorkoutCreationView extends StatefulWidget {
   const WorkoutCreationView({super.key});
@@ -12,6 +12,11 @@ class WorkoutCreationView extends StatefulWidget {
 
 class WorkoutCreationViewState extends State<WorkoutCreationView> {
   final List<Map<String, dynamic>> _questions = [
+    {
+      'type': 'free_text',
+      'question': 'Enter the name of the workout:',
+      'mandatory': true,
+    },
     {
       'type': 'multiple',
       'question': 'Select your workout type:',
@@ -37,10 +42,15 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
       'question': 'Choose warm-up duration:',
       'options': ['5 minutes', '10 minutes', '15 minutes', 'No warm-up']
     },
+    {
+      'type': 'free_text',
+      'question': 'Enter any additional details:',
+    },
   ];
 
   int _currentQuestionIndex = 0;
   String? _dropdownValue;
+  final TextEditingController _textController = TextEditingController();
   List<Map<String, dynamic>> answeredQuestions = [];
 
   void _nextQuestion(Map<String, dynamic> answeredQuestion) {
@@ -52,9 +62,19 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
   }
 
   @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     if (_currentQuestionIndex >= _questions.length) {
-      CustomAssistantService().getADescriptionForAWorkout(answeredQuestions);
+      WorkoutManager().createWorkoutPlan(answeredQuestions);
+      Future.delayed(const Duration(milliseconds: 200), () {
+        // ignore: use_build_context_synchronously
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      });
 
       return Scaffold(
         appBar: AppBar(
@@ -107,7 +127,6 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
         children: [
           Text(current['question']),
           const SizedBox(height: 16),
-          // Display options in a column
           Column(
             children: options.map((option) {
               return Padding(
@@ -121,6 +140,41 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
                 ),
               );
             }).toList(),
+          ),
+        ],
+      );
+    } else if (current['type'] == 'free_text') {
+      questionWidget = Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(current['question']),
+          const SizedBox(height: 16),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              controller: _textController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                hintText: 'Enter your answer',
+              ),
+            ),
+          ),
+          const SizedBox(height: 16),
+          ElevatedButton(
+            onPressed: () {
+              if (current['mandatory'] == true && _textController.text.trim().isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text("This field is mandatory.")),
+                );
+              } else {
+                _nextQuestion({
+                  "question": current["question"],
+                  "answer": _textController.text,
+                });
+                _textController.clear();
+              }
+            },
+            child: const Text('Submit'),
           ),
         ],
       );

@@ -44,7 +44,6 @@ class CustomAssistantService {
       }
     ];
     String response = await talkToChatGPT(userMessage);
-    print(response);
     return response;
   }
 }
