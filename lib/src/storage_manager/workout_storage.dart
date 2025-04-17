@@ -19,29 +19,30 @@ class WorkoutStorageManager {
   Future<Database> _initDatabase() async {
     String dbPath = await getDatabasesPath();
     String path = join(dbPath, 'workout_plans.db');
+    //deleteWorkoutDatabase(); // Uncomment this line to delete the database for testing purposes
     return await openDatabase(
       path,
       version: 1,
       onCreate: (db, version) async {
-        await db.execute('CREATE TABLE workout_plans (name TEXT key, description Text, questions TEXT)');
+        await db.execute('CREATE TABLE workout_plans (name TEXT key, workoutType Text, description Text, questions TEXT)');
       },
     );
   }
 
-  Future<int> addWorkoutPlan(String name, String description, String questions) async {
+  Future<int> addWorkoutPlan(String name, String workoutType, String description, String questions) async {
     final db = await database;
     return await db.insert(
       "workout_plans",
-      {'name': name, 'description': description, 'questions': questions},
+      {'name': name, 'workoutType': workoutType, 'description': description, 'questions': questions},
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
-  Future<int> updateWorkoutPlan(String name, String description, String questions) async {
+  Future<int> updateWorkoutPlan(String name, String workoutType, String description, String questions) async {
     final db = await database;
     return await db.update(
       'workout_plans',
-      {'description': description, 'questions': questions},
+      {'workoutType': workoutType, 'description': description, 'questions': questions},
       where: 'name = ?',
       whereArgs: [name],
     );
@@ -56,10 +57,13 @@ class WorkoutStorageManager {
     );
   }
 
-  Future<List<String>> fetchItems() async {
+  Future<List<Map<String, String>>> fetchItems() async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('workout_plans', columns: ['name']);
-    return maps.map((item) => item['name'] as String).toList();
+    final List<Map<String, dynamic>> maps = await db.query('workout_plans', columns: ['name', 'workoutType']);
+    return maps.map((item) => {
+      'name': item['name'] as String,
+      'workoutType': item['workoutType'] as String,
+    }).toList();
   }
 
   Future<List<Map<String, dynamic>>> fetchItem(String name) async {

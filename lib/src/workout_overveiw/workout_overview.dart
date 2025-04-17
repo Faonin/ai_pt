@@ -10,7 +10,27 @@ class WorkoutOverview extends StatelessWidget {
 
   static const routeName = '/workoutView';
 
-  final workouts = WorkoutStorageManager().fetchItems();
+  final workouts = WorkoutStorageManager().fetchItems().then((items) => items.map((item) {
+        return {
+          'name': item['name'] ?? 'Unnamed Workout',
+          'type': item['workoutType'] ?? 'default',
+        };
+      }).toList());
+
+  IconData _getIconForWorkoutType(String type) {
+    switch (type) {
+      case 'Cardio':
+        return Icons.directions_run;
+      case 'Strength':
+        return Icons.sports_mma;
+      case 'Flexibility':
+        return Icons.self_improvement;
+      case 'Muscle Growth':
+        return Icons.fitness_center;
+      default:
+        return Icons.help_outline;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +38,7 @@ class WorkoutOverview extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Your Workouts'),
       ),
-      body: FutureBuilder<List<String>>(
+      body: FutureBuilder<List<Map<String, String>>>(
         future: workouts,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -42,13 +62,23 @@ class WorkoutOverview extends StatelessWidget {
                         children: [
                           for (var workout in items) ...[
                             GestureDetector(
-                              child: Text(
-                                workout,
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(fontSize: 18),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Icon(
+                                    _getIconForWorkoutType(workout['type']!),
+                                    size: 24,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    workout['name']!,
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(fontSize: 18),
+                                  ),
+                                ],
                               ),
                               onTap: () {
-                                context.read<ActiveWorkoutProvider>().setCurrentWorkout(workout);
+                                context.read<ActiveWorkoutProvider>().setCurrentWorkout(workout['name']!);
                                 Navigator.restorablePushNamed(context, ActiveWorkoutView.routeName);
                               },
                             ),
