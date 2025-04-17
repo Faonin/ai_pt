@@ -62,16 +62,15 @@ class WorkoutStorageManager {
     return maps.map((item) => item['name'] as String).toList();
   }
 
-  Future<List<Map<String, dynamic>>> fetchItem() async {
+  Future<List<Map<String, dynamic>>> fetchItem(String name) async {
     final db = await database;
     return await db.query(
       'workout_plans',
-      where: '',
-      whereArgs: [],
+      where: 'name = ?',
+      whereArgs: [name],
     );
   }
 
-  // Close the database
   Future<void> closeDatabase() async {
     final db = _database;
     if (db != null) {

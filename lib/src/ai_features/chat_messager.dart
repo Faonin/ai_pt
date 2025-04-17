@@ -18,7 +18,7 @@ class CustomAssistantService {
           "model": "gpt-4o-mini",
           "response_format": {"type": "json_object"},
           "messages": userMessage,
-          "max_tokens": 1100,
+          "max_tokens": 2000,
           "temperature": 0.9,
         }),
       );
@@ -40,10 +40,23 @@ class CustomAssistantService {
       {
         "role": "user",
         "content":
-            "JSON format {description: answer in one big descriptive string that will be included in a promt for ChatGTP to generate workouts, that does not add more than has not been agreed and encourages progressive overload} User input: $workout"
+            "JSON format {'description': answer in one big descriptive string that will be included in a promt for ChatGTP to generate workouts, that does not add more than has not been agreed and encourages progressive overload} User input: $workout"
       }
     ];
     String response = await talkToChatGPT(userMessage);
     return response;
+  }
+
+  Future<Map<String, dynamic>> getActiveWorkout(String desciption) async {
+    List userMessage = [
+      {
+        "role": "user",
+        "content":
+            "JSON format {'excersies': [{'name': name of the excersice, 'sets': amout of sets, 'reps': amount of reps, 'weight': the weight of the excersise when applicable}], 'desciption': explination for why the excersices are chosen}. User input: $desciption"
+      }
+    ];
+    String response = await talkToChatGPT(userMessage);
+    print(jsonDecode(response));
+    return jsonDecode(response);
   }
 }

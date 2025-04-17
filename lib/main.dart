@@ -5,9 +5,8 @@ import 'src/settings/settings_controller.dart';
 import 'src/settings/settings_service.dart';
 
 void main() async {
-  
   await dotenv.load(fileName: ".env");
-  // Set up the SettingsController, which will gl<ue user settings to multiple
+  // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
   final settingsController = SettingsController(SettingsService());
 

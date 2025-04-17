@@ -1,6 +1,9 @@
 import 'package:ai_pt/src/storage_manager/workout_storage.dart';
 import 'package:ai_pt/src/workout_creation/workout_creation_view.dart';
+import 'package:ai_pt/src/workout_view/active_workout_view.dart';
+import 'package:ai_pt/src/workout_view/active_workout_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class WorkoutOverview extends StatelessWidget {
   WorkoutOverview({super.key});
@@ -38,10 +41,16 @@ class WorkoutOverview extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           for (var workout in items) ...[
-                            Text(
-                              workout,
-                              textAlign: TextAlign.center,
-                              style: const TextStyle(fontSize: 18),
+                            GestureDetector(
+                              child: Text(
+                                workout,
+                                textAlign: TextAlign.center,
+                                style: const TextStyle(fontSize: 18),
+                              ),
+                              onTap: () {
+                                context.read<ActiveWorkoutProvider>().setCurrentWorkout(workout);
+                                Navigator.restorablePushNamed(context, ActiveWorkoutView.routeName);
+                              },
                             ),
                             const SizedBox(height: 20),
                           ],
