@@ -47,7 +47,7 @@ class CustomAssistantService {
     return response;
   }
 
-  Future<Map<String, dynamic>> getActiveWorkout(String desciption) async {
+  Future<Map<String, dynamic>> getActiveAnaerobicWorkout(String desciption) async {
     List userMessage = [
       {
         "role": "user",
@@ -56,7 +56,6 @@ class CustomAssistantService {
       }
     ];
     String response = await talkToChatGPT(userMessage);
-    print(jsonDecode(response));
     return jsonDecode(response);
   }
 }

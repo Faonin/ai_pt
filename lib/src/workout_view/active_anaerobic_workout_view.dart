@@ -1,11 +1,12 @@
+import 'package:ai_pt/src/workout_view/active_workout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pt/src/workout_view/active_workout_provider.dart';
 import 'package:provider/provider.dart';
 
-class ActiveWorkoutView extends StatelessWidget {
-  const ActiveWorkoutView({super.key});
+class ActiveAnaerobicWorkoutView extends StatelessWidget {
+  const ActiveAnaerobicWorkoutView({super.key});
 
-  static const routeName = '/activeWorkoutView';
+  static const routeName = '/activeAnaerobicWorkoutView';
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +17,7 @@ class ActiveWorkoutView extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              // Change settings about the workout
+              Navigator.restorablePushNamed(context, ActiveWorkoutSettings.routeName);
             },
           ),
         ],

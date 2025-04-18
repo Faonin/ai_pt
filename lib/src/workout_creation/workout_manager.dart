@@ -10,6 +10,7 @@ class WorkoutManager {
       "description",
       jsonEncode(answeredQuestions.sublist(2)),
     );
+
     String description = await CustomAssistantService().getADescriptionForAWorkout(answeredQuestions.sublist(1));
     WorkoutStorageManager().updateWorkoutPlan(
       answeredQuestions[0]['answer'],
@@ -17,5 +18,18 @@ class WorkoutManager {
       description,
       jsonEncode(answeredQuestions.sublist(2)),
     );
+  }
+
+  Future<void> updateWorkoutPlan(List<Map<String, dynamic>> answeredQuestions) async {
+    WorkoutStorageManager().updateWorkoutPlan(
+      answeredQuestions[0]['answer'],
+      answeredQuestions[1]['answer'],
+      "description",
+      jsonEncode(answeredQuestions.sublist(2)),
+    );
+  }
+
+  Future<void> deleteWorkoutPlan(String name) async {
+    WorkoutStorageManager().removeItem(name);
   }
 }

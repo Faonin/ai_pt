@@ -17,12 +17,10 @@ class ActiveWorkoutProvider extends ChangeNotifier {
 
   void setCurrentWorkout(String workout) async {
     _currentWorkout = workout;
-
     notifyListeners();
 
     var description = await WorkoutStorageManager().fetchItem(_currentWorkout);
-    _workoutDetails = await assistantService.getActiveWorkout(description[0]['description']);
-
+    _workoutDetails = await assistantService.getActiveAnaerobicWorkout(description[0]['description']);
     notifyListeners();
   }
 }

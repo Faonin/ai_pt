@@ -48,22 +48,24 @@ class WorkoutStorageManager {
     );
   }
 
-  Future<int> removeItem() async {
+  Future<int> removeItem(String name) async {
     final db = await database;
     return await db.delete(
       'workout_plans',
-      where: '',
-      whereArgs: [],
+      where: 'name = ?',
+      whereArgs: [name],
     );
   }
 
   Future<List<Map<String, String>>> fetchItems() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('workout_plans', columns: ['name', 'workoutType']);
-    return maps.map((item) => {
-      'name': item['name'] as String,
-      'workoutType': item['workoutType'] as String,
-    }).toList();
+    return maps
+        .map((item) => {
+              'name': item['name'] as String,
+              'workoutType': item['workoutType'] as String,
+            })
+        .toList();
   }
 
   Future<List<Map<String, dynamic>>> fetchItem(String name) async {

@@ -1,6 +1,6 @@
 import 'package:ai_pt/src/storage_manager/workout_storage.dart';
 import 'package:ai_pt/src/workout_creation/workout_creation_view.dart';
-import 'package:ai_pt/src/workout_view/active_workout_view.dart';
+import 'package:ai_pt/src/workout_view/active_anaerobic_workout_view.dart';
 import 'package:ai_pt/src/workout_view/active_workout_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -79,7 +79,11 @@ class WorkoutOverview extends StatelessWidget {
                               ),
                               onTap: () {
                                 context.read<ActiveWorkoutProvider>().setCurrentWorkout(workout['name']!);
-                                Navigator.restorablePushNamed(context, ActiveWorkoutView.routeName);
+                                if (workout['type'] == 'Strength' || workout['type'] == 'Muscle Growth') {
+                                  Navigator.restorablePushNamed(context, ActiveAnaerobicWorkoutView.routeName);
+                                } else {
+                                  // Handle other workout types if needed
+                                }
                               },
                             ),
                             const SizedBox(height: 20),
