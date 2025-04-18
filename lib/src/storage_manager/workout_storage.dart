@@ -82,7 +82,7 @@ class WorkoutStorageManager {
     }
   }
 
-  //to be used to delete the database when chaning thing the database structure
+  //to be used to delete the database when making changes to the database structure
   Future<void> deleteWorkoutDatabase() async {
     String dbPath = await getDatabasesPath(); // Get the database directory path
     String path = join(dbPath, 'workout_plans.db'); // Construct the full database file path

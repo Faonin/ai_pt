@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 
 import 'dashboard/dashboard_view.dart';
 import 'dashboard/dashboard_details.dart';
-import 'workout_overveiw/workout_overview.dart';
+import 'workout_overview/workout_overview.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 

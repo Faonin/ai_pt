@@ -40,19 +40,19 @@ class CustomAssistantService {
       {
         "role": "user",
         "content":
-            "JSON format {'description': answer in one big descriptive string that will be included in a promt for ChatGTP to generate workouts, that does not add more than has not been agreed and encourages progressive overload} User input: $workout"
+            "JSON format {'description': answer in one big descriptive string that will be included in a prompt for ChatGTP to generate workouts, that does not add more than has not been agreed and encourages progressive overload} User input: $workout"
       }
     ];
     String response = await talkToChatGPT(userMessage);
     return response;
   }
 
-  Future<Map<String, dynamic>> getActiveWorkout(String desciption) async {
+  Future<Map<String, dynamic>> getActiveWorkout(String description) async {
     List userMessage = [
       {
         "role": "user",
         "content":
-            "JSON format {'excersies': [{'name': name of the excersice, 'sets': amout of sets, 'reps': amount of reps, 'weight': the weight of the excersise when applicable}], 'desciption': explination for why the excersices are chosen}. User input: $desciption"
+            "JSON format {'exercises': [{'name': name of the exercises, 'sets': amount of sets, 'reps': amount of reps, 'weight': the weight of the exercises when applicable}], 'description': explanation for why the exercises are chosen}. User input: $description"
       }
     ];
     String response = await talkToChatGPT(userMessage);

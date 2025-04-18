@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../settings/settings_view.dart';
 import 'dashboard_item_class.dart';
-import '../workout_overveiw/workout_overview.dart';
+import 'package:ai_pt/src/workout_overview/workout_overview.dart';
 
 /// Displays a list of SampleItems.
 class Dashboard extends StatelessWidget {
