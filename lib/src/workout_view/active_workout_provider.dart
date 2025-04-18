@@ -1,6 +1,6 @@
 import 'package:ai_pt/src/storage_manager/workout_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:ai_pt/src/ai_features/chat_messager.dart';
+import 'package:ai_pt/src/ai_features/chat_messenger.dart';
 
 class ActiveWorkoutProvider extends ChangeNotifier {
   String _currentWorkout = 'No workout selected';

@@ -1,4 +1,4 @@
-import 'package:ai_pt/src/ai_features/chat_messager.dart';
+import 'package:ai_pt/src/ai_features/chat_messenger.dart';
 import 'package:ai_pt/src/storage_manager/workout_storage.dart';
 import 'dart:convert';
 
@@ -27,6 +27,16 @@ class WorkoutManager {
       "description",
       jsonEncode(answeredQuestions.sublist(2)),
     );
+  }
+
+  Future<List<Map<String, dynamic>>> getWorkoutDetails(String name) async {
+    
+    var workoutDetails = await WorkoutStorageManager().fetchItem(name);
+    
+    print(workoutDetails[0]['questions'] != null
+        ? jsonDecode(workoutDetails[0]['questions'])
+        : workoutDetails[0]['questions']);
+    return [];
   }
 
   Future<void> deleteWorkoutPlan(String name) async {

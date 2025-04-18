@@ -192,7 +192,7 @@ class _ActiveWorkoutSettingsState extends State<ActiveWorkoutSettings> {
                 },
                 child: const Text('Save'),
               ),
-              ElevatedButton(
+              ElevatedButton( //delete button
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                 ),
