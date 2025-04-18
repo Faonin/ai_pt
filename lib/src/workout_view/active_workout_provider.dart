@@ -20,7 +20,7 @@ class ActiveWorkoutProvider extends ChangeNotifier {
     notifyListeners();
 
     var description = await WorkoutStorageManager().fetchItem(_currentWorkout);
-    _workoutDetails = await assistantService.getActiveAnaerobicWorkout(description[0]['description']);
+    _workoutDetails = await assistantService.getActiveAnaerobicWorkout(description['description']);
     notifyListeners();
   }
 }

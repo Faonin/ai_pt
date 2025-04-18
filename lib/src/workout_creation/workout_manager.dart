@@ -29,14 +29,13 @@ class WorkoutManager {
     );
   }
 
-  Future<List<Map<String, dynamic>>> getWorkoutDetails(String name) async {
-    
-    var workoutDetails = await WorkoutStorageManager().fetchItem(name);
-    
-    print(workoutDetails[0]['questions'] != null
-        ? jsonDecode(workoutDetails[0]['questions'])
-        : workoutDetails[0]['questions']);
-    return [];
+  Future<Set<Map<String, dynamic>>> getWorkoutDetails(String name) async {
+    Map<String, dynamic> workoutDetails = Map.of(await WorkoutStorageManager().fetchItem(name));
+
+    workoutDetails.remove('description');
+    workoutDetails.remove('workoutType');
+    print(workoutDetails);
+    return {workoutDetails};
   }
 
   Future<void> deleteWorkoutPlan(String name) async {

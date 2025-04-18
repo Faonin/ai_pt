@@ -31,7 +31,7 @@ class SettingsView extends StatelessWidget {
               children: [
                 TextButton(
                   onPressed: () {
-                    WorkoutManager().getWorkoutDetails('');
+                    WorkoutManager().getWorkoutDetails('Cardio');
                   },
                   child: const Text('Test feature'),
                 ),
