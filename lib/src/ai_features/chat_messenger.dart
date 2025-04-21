@@ -52,7 +52,7 @@ class CustomAssistantService {
       {
         "role": "user",
         "content":
-            "Generate a good workout that keeps progressive overload in mind. User input: $description. Previous workouts: {none}. JSON format: {'exercises': [{'name': name of the exercises, 'sets': [{'set':'1', 'reps': 'amount of reps', 'weight': 'weight in kilos, bodyweight, or 'First-Time' of you dont know'}, {continue for as many sets as recommended}], 'description': explanation for why this exercise was chosen}]}."
+            "Generate a good workout that keeps progressive overload in mind. User input: $description. Previous workouts: {none}. JSON format: {'exercises': [{'name': name of the exercises, 'sets': [{'set':'1', 'reps': 'amount of reps', 'weight': \"First-Time\" if you don't know for all sets, or weight in kilos, or Body Weight'}, {continue for as many sets as recommended}], 'description': explanation for why this exercise was chosen}]}."
       }
     ];
     String response = await talkToChatGPT(userMessage);
