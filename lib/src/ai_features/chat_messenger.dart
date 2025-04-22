@@ -35,7 +35,8 @@ class CustomAssistantService {
     }
   }
 
-  Future<String> getADescriptionForAWorkout(List<Map<String, dynamic>> workout) async {
+  Future<String> getADescriptionForAWorkout(
+      List<Map<String, dynamic>> workout) async {
     List userMessage = [
       {
         "role": "user",
@@ -47,12 +48,13 @@ class CustomAssistantService {
     return response;
   }
 
-  Future<Map<String, dynamic>> getActiveAnaerobicWorkout(String description) async {
+  Future<Map<String, dynamic>> getActiveAnaerobicWorkout(
+      String description) async {
     List userMessage = [
       {
         "role": "user",
         "content":
-            "Generate a good workout that keeps progressive overload in mind. User input: $description. Previous workouts: {none}. JSON format: {'exercises': [{'name': name of the exercises, 'sets': [{'set':'1', 'reps': 'amount of reps', 'weight': \"First-Time\" if you don't know for all sets, or weight in kilos, or Body Weight'}, {continue for as many sets as recommended}], 'description': explanation for why this exercise was chosen}]}."
+            "Generate a good workout that keeps progressive overload in mind. User input: $description. Previous workouts: {none}. JSON format: {'exercises': [{'name': name of the exercises, 'sets': [{'set':'1', 'amount': 'amount of reps/time', 'unit': 'the unit, seconds/minutes/', 'weight': Use \"First-Time\" for all sets in that exercise if you don't know what weight is appropriate; or weight in kilos, or \"None\" for bodyweight exercises'}, {continue for as many sets as recommended}], 'description': explanation for why this exercise was chosen}]}."
       }
     ];
     String response = await talkToChatGPT(userMessage);

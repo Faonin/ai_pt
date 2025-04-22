@@ -7,11 +7,21 @@ class ActiveWorkoutProvider extends ChangeNotifier {
   final assistantService = CustomAssistantService();
   late Map<String, dynamic> _currentExerciseDetails = {};
   late Map<String, dynamic> _currentUserExerciseInput = {};
-  List<dynamic> _lastGeneratedWorkoutDetails = ["", DateTime.fromMillisecondsSinceEpoch(0)]; // [workoutName, lastUpdate]
+  List<dynamic> _lastGeneratedWorkoutDetails = [
+    "",
+    DateTime.fromMillisecondsSinceEpoch(0)
+  ]; // [workoutName, lastUpdate]
+
+  void setCurrentWorkout(String workout) {
+    _currentWorkoutName = workout;
+    notifyListeners();
+  }
 
   String get currentWorkout => _currentWorkoutName;
+  Map<String, dynamic> get currentUserExerciseInput =>
+      _currentUserExerciseInput;
 
-  Future<Map<String, dynamic>> get workoutAnaerobicDetails async {
+  Future<Map<String, dynamic>> get workoutDetails async {
     if (_currentWorkoutName == 'No workout selected') {
       return {
         "exercises": [
@@ -20,23 +30,40 @@ class ActiveWorkoutProvider extends ChangeNotifier {
         "description": "No workout selected"
       };
     }
-    Map<String, dynamic> workoutDetails = await WorkoutStorageManager().fetchItem(_currentWorkoutName);
-      if (_currentExerciseDetails.isEmpty == true || workoutDetails["name"] != _lastGeneratedWorkoutDetails[0] || DateTime.now().difference(_lastGeneratedWorkoutDetails[1]).inHours >= 6) {       
-        _lastGeneratedWorkoutDetails = [workoutDetails["name"], DateTime.now()];
-        _currentExerciseDetails = await assistantService.getActiveAnaerobicWorkout(workoutDetails['description']);
-
-      }
+    Map<String, dynamic> workoutDetails =
+        await WorkoutStorageManager().fetchItem(_currentWorkoutName);
+    if (_currentExerciseDetails.isEmpty == true ||
+        workoutDetails["name"] != _lastGeneratedWorkoutDetails[0] ||
+        DateTime.now().difference(_lastGeneratedWorkoutDetails[1]).inHours >=
+            6) {
+      _lastGeneratedWorkoutDetails = [workoutDetails["name"], DateTime.now()];
+      _currentExerciseDetails = await assistantService
+          .getActiveAnaerobicWorkout(workoutDetails['description']);
+      createCurrentUserWorkout(_currentExerciseDetails);
+    }
     return _currentExerciseDetails;
   }
 
-  void createCurrentUserWorkout(Map<String, dynamic> workout) {
-
-
-    notifyListeners();
+  Map<String, dynamic> createCurrentUserWorkout(Map<String, dynamic> workout) {
+    _currentUserExerciseInput = {
+      "exercises": workout["exercises"].map((exercise) {
+        return {
+          "name": exercise["name"],
+          "sets": exercise["sets"].map((set) {
+            return {
+              "set": set["set"],
+              "amount": null,
+              "unit": set["unit"],
+              if (set["weight"] != "None") "weight": null,
+            };
+          }).toList(),
+        };
+      }).toList(),
+    };
+    return _currentUserExerciseInput;
   }
 
-  void setCurrentWorkout(String workout) {
-    _currentWorkoutName = workout;
-    notifyListeners();
+  void saveCurrentUserWorkout() {
+    print(_currentUserExerciseInput);
   }
 }

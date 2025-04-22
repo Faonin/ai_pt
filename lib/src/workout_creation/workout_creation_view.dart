@@ -44,7 +44,7 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
     },
     {
       'type': 'free_text',
-      'question': 'Enter any additional details:',
+      'question': 'Enter any additional details like goals:',
     },
   ];
 
