@@ -1,12 +1,12 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
-class TranningLogsManger {
-  static final TranningLogsManger _instance = TranningLogsManger._internal();
+class TrainingLogsStorageManager {
+  static final TrainingLogsStorageManager _instance = TrainingLogsStorageManager._internal();
 
-  factory TranningLogsManger() => _instance;
+  factory TrainingLogsStorageManager() => _instance;
 
-  TranningLogsManger._internal();
+  TrainingLogsStorageManager._internal();
 
   Database? _database;
 
@@ -23,16 +23,28 @@ class TranningLogsManger {
       path,
       version: 1,
       onCreate: (db, version) async {
-        await db.execute('CREATE TABLE completed_exercises (program TEXT, date DATE, name TEXT)');
+        await db.execute(
+            'CREATE TABLE completed_exercises (program TEXT, workoutType TEXT, date DATE, exercise TEXT, sets TEXT, amount TEXT, unit TEXT, weight TEXT, rpe TEXT)');
       },
     );
   }
 
-  Future<int> addItem() async {
+  Future<int> addItem(
+      String program, String workoutType, String date, String exercise, String set, String amount, String unit, String weight, String rpe) async {
     final db = await database;
     return await db.insert(
       "completed_exercises",
-      {},
+      {
+        "program": program,
+        "workoutType": workoutType,
+        "date": date,
+        "exercise": exercise,
+        "sets": set,
+        "amount": amount,
+        "unit": unit,
+        "weight": weight,
+        "rpe": rpe
+      },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
@@ -68,7 +80,7 @@ class TranningLogsManger {
     }
   }
 /*
-  to be used to delete the database when chaning thing the database structure
+  to be used to delete the database when changing thing the database structure
   Future<void> deleteMealsDatabase() async {
     String dbPath = await getDatabasesPath(); // Get the database directory path
     String path = join(dbPath, 'completed_exercises.db'); // Construct the full database file path

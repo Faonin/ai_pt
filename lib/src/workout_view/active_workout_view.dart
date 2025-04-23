@@ -17,8 +17,7 @@ class ActiveWorkoutView extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
-              Navigator.restorablePushNamed(
-                  context, ActiveWorkoutSettings.routeName);
+              Navigator.restorablePushNamed(context, ActiveWorkoutSettings.routeName);
             },
           ),
         ],
@@ -34,13 +33,10 @@ class ActiveWorkoutView extends StatelessWidget {
             return const Center(child: Text('No exercises available.'));
           }
           final exercises = snapshot.data!["exercises"];
-          final currentUserExerciseInput =
-              context.read<ActiveWorkoutProvider>().currentUserExerciseInput;
+          final currentUserExerciseInput = context.read<ActiveWorkoutProvider>().currentUserExerciseInput;
 
           return ListView.builder(
-            padding: const EdgeInsets.only(
-                bottom:
-                    160), // Add padding to prevent hiding behind the floating button
+            padding: const EdgeInsets.only(bottom: 160), // Add padding to prevent hiding behind the floating button
             itemCount: exercises.length,
             itemBuilder: (context, index) {
               final exercise = exercises[index];
@@ -61,8 +57,7 @@ class ActiveWorkoutView extends StatelessWidget {
                             context: context,
                             builder: (context) => AlertDialog(
                               title: const Text('Exercise Info'),
-                              content: Text(exercise["description"] ??
-                                  'No description available.'),
+                              content: Text(exercise["description"] ?? 'No description available.'),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.of(context).pop(),
@@ -76,15 +71,11 @@ class ActiveWorkoutView extends StatelessWidget {
                     ],
                   ),
                 ),
-                initiallyExpanded:
-                    index == 0, // Expand the first item by default
+                initiallyExpanded: index == 0, // Expand the first item by default
                 children: [
-                  for (var setIndex = 0;
-                      setIndex < exercise["sets"].length;
-                      setIndex++)
+                  for (var setIndex = 0; setIndex < exercise["sets"].length; setIndex++)
                     Padding(
-                      padding: const EdgeInsets.only(
-                          left: 32.0, top: 8.0, bottom: 8.0),
+                      padding: const EdgeInsets.only(left: 32.0, top: 8.0, bottom: 8.0),
                       child: Row(
                         children: [
                           Expanded(
@@ -98,25 +89,18 @@ class ActiveWorkoutView extends StatelessWidget {
                             flex: 3,
                             child: TextField(
                               controller: TextEditingController(
-                                text: userExercise["sets"][setIndex]["amount"]
-                                    ?.toString(),
+                                text: userExercise["sets"][setIndex]["amount"]?.toString(),
                               ),
                               decoration: InputDecoration(
                                 labelText: exercise["sets"][setIndex]["unit"]
                                     .toString()
-                                    .replaceFirst(
-                                        exercise["sets"][setIndex]["unit"][0],
-                                        exercise["sets"][setIndex]["unit"][0]
-                                            .toUpperCase()),
-                                hintText: exercise["sets"][setIndex]["amount"]
-                                    .toString(),
-                                floatingLabelBehavior:
-                                    FloatingLabelBehavior.always,
+                                    .replaceFirst(exercise["sets"][setIndex]["unit"][0], exercise["sets"][setIndex]["unit"][0].toUpperCase()),
+                                hintText: exercise["sets"][setIndex]["amount"].toString(),
+                                floatingLabelBehavior: FloatingLabelBehavior.always,
                               ),
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
-                                userExercise["sets"][setIndex]["amount"] =
-                                    int.tryParse(value);
+                                userExercise["sets"][setIndex]["amount"] = int.tryParse(value);
                               },
                             ),
                           ),
@@ -126,20 +110,16 @@ class ActiveWorkoutView extends StatelessWidget {
                               flex: 3,
                               child: TextField(
                                 controller: TextEditingController(
-                                  text: userExercise["sets"][setIndex]["weight"]
-                                      ?.toString(),
+                                  text: userExercise["sets"][setIndex]["weight"]?.toString(),
                                 ),
                                 decoration: InputDecoration(
                                   labelText: 'Weight (Kg)',
-                                  hintText: exercise["sets"][setIndex]["weight"]
-                                      .toString(),
-                                  floatingLabelBehavior:
-                                      FloatingLabelBehavior.always,
+                                  hintText: exercise["sets"][setIndex]["weight"].toString(),
+                                  floatingLabelBehavior: FloatingLabelBehavior.always,
                                 ),
                                 keyboardType: TextInputType.number,
                                 onChanged: (value) {
-                                  userExercise["sets"][setIndex]["weight"] =
-                                      int.tryParse(value);
+                                  userExercise["sets"][setIndex]["weight"] = int.tryParse(value);
                                 },
                               ),
                             ),
@@ -177,8 +157,47 @@ class ActiveWorkoutView extends StatelessWidget {
         width: 350,
         child: FloatingActionButton(
           onPressed: () {
-            context.read<ActiveWorkoutProvider>().saveCurrentUserWorkout();
-            Navigator.pop(context);
+            final currentUserExerciseInput = context.read<ActiveWorkoutProvider>().currentUserExerciseInput;
+            bool incomplete = false;
+
+            for (final exercise in currentUserExerciseInput["exercises"]) {
+              for (final set in exercise["sets"]) {
+                if (set["amount"] == null || (set.containsKey("weight") && set["weight"] == null)) {
+                  incomplete = true;
+                  break;
+                }
+              }
+              if (incomplete) break;
+            }
+
+            if (incomplete) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Incomplete Workout'),
+                  content: const Text('Some fields are still empty. Are you sure you want to finish the workout without completing all fields?'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        context.read<ActiveWorkoutProvider>().saveCurrentUserWorkout();
+                        Navigator.of(context)
+                          ..pop() // Close the dialog
+                          ..pop(); // Close the workout view
+                      },
+                      child: const Text('Yes, finish workout'),
+                    ),
+                  ],
+                ),
+              );
+              return;
+            } else {
+              context.read<ActiveWorkoutProvider>().saveCurrentUserWorkout();
+              Navigator.pop(context);
+            }
           },
           tooltip: 'Finish Workout',
           shape: RoundedRectangleBorder(

@@ -78,9 +78,35 @@ class WorkoutOverview extends StatelessWidget {
                                 ],
                               ),
                               onTap: () {
-                                if (context.read<ActiveWorkoutProvider>().currentWorkout != workout['name']!) {
+                                String currentWorkout = context.read<ActiveWorkoutProvider>().currentWorkout;
+                                if (currentWorkout != workout['name']! && currentWorkout != 'No workout selected') {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Switch Workout'),
+                                      content: const Text('Are you sure you want to switch workouts?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () {
+                                            context.read<ActiveWorkoutProvider>().setCurrentWorkout(workout['name']!);
+                                            context.read<ActiveWorkoutProvider>().setCurrentWorkoutType(workout['type']!);
+                                            Navigator.of(context).pop();
+                                            Navigator.restorablePushNamed(context, ActiveWorkoutView.routeName);
+                                          },
+                                          child: const Text('Switch'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
                                 } else {
                                   context.read<ActiveWorkoutProvider>().setCurrentWorkout(workout['name']!);
+                                  context.read<ActiveWorkoutProvider>().setCurrentWorkoutType(workout['type']!);
                                   Navigator.restorablePushNamed(context, ActiveWorkoutView.routeName);
                                 }
                               },
