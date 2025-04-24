@@ -19,32 +19,41 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
     },
     {
       'type': 'multiple',
-      'question': 'Select your workout type:',
-      'options': ['Cardio', 'Strength', 'Flexibility', 'Muscle Growth']
-    },
-    {
-      'type': 'multiple',
-      'question': 'Select your workout preference:',
-      'options': ['Indoor', 'Outdoor', 'Mix']
-    },
-    {
-      'type': 'dropdown',
-      'question': 'Select difficulty level:',
-      'options': ['Easy', 'Medium', 'Hard']
-    },
-    {
-      'type': 'dropdown',
-      'question': 'How many days a week do you wanna workout:',
-      'options': ['1', '2', '3', '4', '5', '6', '7']
-    },
-    {
-      'type': 'multiple',
-      'question': 'Choose warm-up duration:',
-      'options': ['5 minutes', '10 minutes', '15 minutes', 'No warm-up']
+      'question': 'What type of training do you prefer?',
+      'options': ['Strength', 'Muscle Growth', 'Cardio', 'Flexibility'],
     },
     {
       'type': 'free_text',
-      'question': 'Enter any additional details like goals:',
+      'question': 'What is your preferred workout  (in minutes)?',
+      'mandatory': true,
+    },
+    {
+      'type': 'free_text',
+      'question': 'What is your primary fitness goal?',
+      'mandatory': true,
+    },
+    {
+      'type': 'multiple',
+      'question': 'How would you rate your current fitness level?',
+      'options': ['Beginner', 'Intermediate', 'Advanced'],
+    },
+    {
+      'type': 'dropdown',
+      'question': 'How many days per week can you commit to training?',
+      'options': ['1-2 days', '3-4 days', '5-7 days'],
+    },
+    {
+      'type': 'free_text',
+      'question': 'Do you have any specific health concerns or injuries?',
+    },
+    {
+      'type': 'multiple',
+      'question': 'How intense do you prefer your workouts?',
+      'options': ['Light', 'Moderate', 'Intense'],
+    },
+    {
+      'type': 'free_text',
+      'question': 'Any additional information or goals you’d like to share?',
     },
   ];
 

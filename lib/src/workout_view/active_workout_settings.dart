@@ -8,7 +8,6 @@ class ActiveWorkoutSettings extends StatelessWidget {
 
   static const routeName = '/activeWorkoutSettings';
 
- 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,25 +38,26 @@ class ActiveWorkoutSettings extends StatelessWidget {
                 ),
                 onPressed: () async {
                   final confirmed = await showDialog<bool>(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        title: const Text('Confirm Delete'),
-                        content: const Text('Are you sure you want to delete this workout plan?'),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(false),
-                            child: const Text('Cancel'),
-                          ),
-                          TextButton(
-                            onPressed: () => Navigator.of(context).pop(true),
-                            child: const Text('Delete'),
-                          ),
-                        ],
-                      );
-                    },
-                  ) ?? false; // Handle null case
-                  
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: const Text('Confirm Delete'),
+                            content: const Text('Are you sure you want to delete this workout plan?'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(false),
+                                child: const Text('Cancel'),
+                              ),
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(true),
+                                child: const Text('Delete'),
+                              ),
+                            ],
+                          );
+                        },
+                      ) ??
+                      false; // Handle null case
+
                   if (confirmed && context.mounted) {
                     final currentWorkout = context.read<ActiveWorkoutProvider>().currentWorkout;
                     WorkoutManager().deleteWorkoutPlan(currentWorkout);

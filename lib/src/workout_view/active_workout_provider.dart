@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:ai_pt/src/storage_manager/training_logs_storage_manager.dart';
 import 'package:ai_pt/src/storage_manager/workout_storage.dart';
 import 'package:flutter/material.dart';
@@ -55,7 +57,8 @@ class ActiveWorkoutProvider extends ChangeNotifier {
               "set": set["set"],
               "amount": null,
               "unit": set["unit"],
-              if (set["weight"] != "None") "weight": null,
+              if (set["dose"] != "None") "dose": null,
+              if (set["dose"] != "None") "dose_unit": set["dose_unit"],
             };
           }).toList(),
         };
@@ -68,8 +71,12 @@ class ActiveWorkoutProvider extends ChangeNotifier {
     _currentUserExerciseInput["exercises"] = _currentUserExerciseInput["exercises"]
         .map((exercise) {
           final filteredSets = exercise["sets"].where((set) {
-            if (set.containsKey("weight")) {
-              return set["amount"] != null && set["weight"] != null;
+            if (set.containsKey("dose")) {
+              if (set["dose_unit"] != null) {
+                return set["amount"] != null;
+              } else {
+                return set["amount"] != null && set["dose"] != null;
+              }
             } else {
               return set["amount"] != null;
             }
@@ -79,7 +86,6 @@ class ActiveWorkoutProvider extends ChangeNotifier {
         })
         .where((exercise) => (exercise["sets"] as List).isNotEmpty)
         .toList();
-
     if (_currentUserExerciseInput.isNotEmpty) {
       for (var exercise in _currentUserExerciseInput["exercises"]) {
         for (var set in exercise["sets"]) {
@@ -91,7 +97,8 @@ class ActiveWorkoutProvider extends ChangeNotifier {
               set["set"].toString(), // set
               set["amount"].toString(), // amount
               set["unit"], // unit
-              set.containsKey("weight") ? set["weight"].toString() : "", // weight
+              set.containsKey("dose") ? set["dose"].toString() : "", // dose
+              set.containsKey("dose_unit") ? set["dose_unit"].toString() : "", // dose
               set.containsKey("RPE") ? set["RPE"].toString() : "" // rpe
               );
         }

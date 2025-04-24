@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:ai_pt/src/storage_manager/training_logs_storage_manager.dart';
 
 class CustomAssistantService {
   final String? apiKey = dotenv.env["open_ai_key"];
@@ -15,10 +16,10 @@ class CustomAssistantService {
           "Authorization": "Bearer $apiKey",
         },
         body: jsonEncode({
-          "model": "gpt-4o-mini",
+          "model": "gpt-4o-2024-08-06",
           "response_format": {"type": "json_object"},
           "messages": userMessage,
-          "max_tokens": 2000,
+          "max_tokens": 2500,
           "temperature": 0.9,
         }),
       );
@@ -35,8 +36,7 @@ class CustomAssistantService {
     }
   }
 
-  Future<String> getADescriptionForAWorkout(
-      List<Map<String, dynamic>> workout) async {
+  Future<String> getADescriptionForAWorkout(List<Map<String, dynamic>> workout) async {
     List userMessage = [
       {
         "role": "user",
@@ -48,13 +48,12 @@ class CustomAssistantService {
     return response;
   }
 
-  Future<Map<String, dynamic>> getActiveAnaerobicWorkout(
-      String description) async {
+  Future<Map<String, dynamic>> getActiveAnaerobicWorkout(String description) async {
     List userMessage = [
       {
         "role": "user",
         "content":
-            "Generate a good workout that keeps progressive overload in mind. User input: $description. Previous workouts: {none}. JSON format: {'exercises': [{'name': name of the exercises, 'sets': [{'set':'1', 'amount': 'amount of reps/time', 'unit': 'the unit, seconds/minutes/', 'weight': Use \"First-Time\" for all sets in that exercise if you don't know what weight is appropriate; or weight in kilos, or \"None\" for bodyweight exercises'}, {continue for as many sets as recommended}], 'description': explanation for why this exercise was chosen}]}."
+            "Generate todays workout that keeps progressive overload based on previous exercises in mind in mind, but also recovery. User input: $description. Previous workouts: ${await TrainingLogsStorageManager().fetchItems(30)}. JSON format: {'exercises': [{'name': name of the exercises, 'sets': [{'set':'1', 'amount': 'amount of reps/time', 'unit': 'the unit, seconds/minutes/', 'dose': Use \"First-Time\" for all sets in that exercise if you don't know what weight is appropriate; or weight, or \"None\" for bodyweight exercises', 'dose_unit': 'If they weight is in kilo/meters/km or any other unit'}, {continue for as many sets as recommended}], 'description': explanation for why this exercise was chosen}]}."
       }
     ];
     String response = await talkToChatGPT(userMessage);

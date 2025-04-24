@@ -105,21 +105,21 @@ class ActiveWorkoutView extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 16),
-                          if (exercise["sets"][setIndex]["weight"] != "None")
+                          if (exercise["sets"][setIndex]["dose"] != "None")
                             Expanded(
                               flex: 3,
                               child: TextField(
                                 controller: TextEditingController(
-                                  text: userExercise["sets"][setIndex]["weight"]?.toString(),
+                                  text: userExercise["sets"][setIndex]["dose"]?.toString(),
                                 ),
                                 decoration: InputDecoration(
-                                  labelText: 'Weight (Kg)',
-                                  hintText: exercise["sets"][setIndex]["weight"].toString(),
+                                  labelText: exercise["sets"][setIndex]["dose_unit"].toString(),
+                                  hintText: exercise["sets"][setIndex]["dose"].toString(),
                                   floatingLabelBehavior: FloatingLabelBehavior.always,
                                 ),
                                 keyboardType: TextInputType.number,
                                 onChanged: (value) {
-                                  userExercise["sets"][setIndex]["weight"] = int.tryParse(value);
+                                  userExercise["sets"][setIndex]["dose"] = int.tryParse(value);
                                 },
                               ),
                             ),
@@ -162,14 +162,13 @@ class ActiveWorkoutView extends StatelessWidget {
 
             for (final exercise in currentUserExerciseInput["exercises"]) {
               for (final set in exercise["sets"]) {
-                if (set["amount"] == null || (set.containsKey("weight") && set["weight"] == null)) {
+                if (set["amount"] == null || (set.containsKey("dose") && set["dose"] == null)) {
                   incomplete = true;
                   break;
                 }
               }
               if (incomplete) break;
             }
-
             if (incomplete) {
               showDialog(
                 context: context,
