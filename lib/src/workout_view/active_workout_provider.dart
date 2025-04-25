@@ -8,6 +8,7 @@ import 'package:ai_pt/src/ai_features/chat_messenger.dart';
 class ActiveWorkoutProvider extends ChangeNotifier {
   String _currentWorkoutName = 'No workout selected';
   String _currentWorkoutType = 'No workout type selected';
+  List<String> _currentWorkoutFlex = ['No workout selected', 'No workout type selected'];
   final assistantService = CustomAssistantService();
   late Map<String, dynamic> _currentExerciseDetails = {};
   late Map<String, dynamic> _currentUserExerciseInput = {};
@@ -18,14 +19,24 @@ class ActiveWorkoutProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  setFlex(List<String> flex) {
+    _currentWorkoutFlex = flex;
+  }
+
   void setCurrentWorkoutType(String workoutType) {
     _currentWorkoutType = workoutType;
     notifyListeners();
   }
 
-  String get currentWorkout => _currentWorkoutName;
   String get currentWorkoutType => _currentWorkoutType;
   Map<String, dynamic> get currentUserExerciseInput => _currentUserExerciseInput;
+
+  String get currentWorkout {
+    if (DateTime.now().difference(_lastGeneratedWorkoutDetails[1]).inHours < 6) {
+      _currentWorkoutName = 'No workout selected';
+    }
+    return _currentWorkoutName;
+  }
 
   Future<Map<String, dynamic>> get workoutDetails async {
     if (_currentWorkoutName == 'No workout selected') {
@@ -41,7 +52,7 @@ class ActiveWorkoutProvider extends ChangeNotifier {
         workoutDetails["name"] != _lastGeneratedWorkoutDetails[0] ||
         DateTime.now().difference(_lastGeneratedWorkoutDetails[1]).inHours >= 6) {
       _lastGeneratedWorkoutDetails = [workoutDetails["name"], DateTime.now()];
-      _currentExerciseDetails = await assistantService.getActiveAnaerobicWorkout(workoutDetails['description']);
+      _currentExerciseDetails = await assistantService.getActiveAnaerobicWorkout(_currentWorkoutFlex, workoutDetails['description']);
       createCurrentUserWorkout(_currentExerciseDetails);
     }
     return _currentExerciseDetails;

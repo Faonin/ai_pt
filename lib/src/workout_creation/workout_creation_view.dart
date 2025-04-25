@@ -24,7 +24,7 @@ class WorkoutCreationViewState extends State<WorkoutCreationView> {
     },
     {
       'type': 'free_text',
-      'question': 'What is your preferred workout  (in minutes)?',
+      'question': 'What is your preferred workout time? (in minutes)?',
       'mandatory': true,
     },
     {

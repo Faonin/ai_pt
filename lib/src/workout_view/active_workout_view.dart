@@ -2,11 +2,41 @@ import 'package:ai_pt/src/workout_view/active_workout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pt/src/workout_view/active_workout_provider.dart';
 import 'package:provider/provider.dart';
+import 'dart:math';
 
 class ActiveWorkoutView extends StatelessWidget {
   const ActiveWorkoutView({super.key});
 
   static const routeName = '/activeWorkoutView';
+
+  void _handleSetCompletion(BuildContext context, Map<String, dynamic> exercise, int setIndex, Map<String, dynamic> userExercise) async {
+    final setDetails = exercise["sets"][setIndex];
+    final userSet = userExercise["sets"][setIndex];
+
+    // Check if "amount" is filled and, if required, "dose" is filled.
+    final isCompleted = userSet["amount"] != null && (setDetails["dose"] == "None" || userSet["dose"] != null);
+
+    if (isCompleted) {
+      // 25% chance to trigger
+      final random = Random();
+      if (random.nextDouble() < 0.2) {
+        // Trigger the alert dialog
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Set Completed!'),
+            content: const Text('Great job! You completed this set.'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +66,7 @@ class ActiveWorkoutView extends StatelessWidget {
           final currentUserExerciseInput = context.read<ActiveWorkoutProvider>().currentUserExerciseInput;
 
           return ListView.builder(
-            padding: const EdgeInsets.only(bottom: 160), // Add padding to prevent hiding behind the floating button
+            padding: const EdgeInsets.only(bottom: 160), // Prevent hiding behind the floating button
             itemCount: exercises.length,
             itemBuilder: (context, index) {
               final exercise = exercises[index];
@@ -92,15 +122,17 @@ class ActiveWorkoutView extends StatelessWidget {
                                 text: userExercise["sets"][setIndex]["amount"]?.toString(),
                               ),
                               decoration: InputDecoration(
-                                labelText: exercise["sets"][setIndex]["unit"]
-                                    .toString()
-                                    .replaceFirst(exercise["sets"][setIndex]["unit"][0], exercise["sets"][setIndex]["unit"][0].toUpperCase()),
+                                labelText: exercise["sets"][setIndex]["unit"].toString().replaceFirst(
+                                      exercise["sets"][setIndex]["unit"][0],
+                                      exercise["sets"][setIndex]["unit"][0].toUpperCase(),
+                                    ),
                                 hintText: exercise["sets"][setIndex]["amount"].toString(),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
                               ),
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
                                 userExercise["sets"][setIndex]["amount"] = int.tryParse(value);
+                                _handleSetCompletion(context, exercise, setIndex, userExercise);
                               },
                             ),
                           ),
@@ -120,6 +152,7 @@ class ActiveWorkoutView extends StatelessWidget {
                                 keyboardType: TextInputType.number,
                                 onChanged: (value) {
                                   userExercise["sets"][setIndex]["dose"] = int.tryParse(value);
+                                  _handleSetCompletion(context, exercise, setIndex, userExercise);
                                 },
                               ),
                             ),

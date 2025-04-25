@@ -2,6 +2,7 @@ import 'package:ai_pt/src/workout_creation/workout_creation_view.dart';
 import 'package:ai_pt/src/workout_view/active_workout_view.dart';
 import 'package:ai_pt/src/workout_view/active_workout_provider.dart';
 import 'package:ai_pt/src/workout_view/active_workout_settings.dart';
+import 'package:ai_pt/src/workout_overview/workout_adaptability_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -45,6 +46,8 @@ class MyApp extends StatelessWidget {
                       return WorkoutOverview();
                     case DashboardDetails.routeName:
                       return const DashboardDetails();
+                    case WorkoutAdaptabilityManager.routeName:
+                      return WorkoutAdaptabilityManager();
                     case ActiveWorkoutView.routeName:
                       return const ActiveWorkoutView();
                     case ActiveWorkoutSettings.routeName:

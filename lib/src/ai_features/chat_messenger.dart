@@ -48,12 +48,12 @@ class CustomAssistantService {
     return response;
   }
 
-  Future<Map<String, dynamic>> getActiveAnaerobicWorkout(String description) async {
+  Future<Map<String, dynamic>> getActiveAnaerobicWorkout(List<String> mood, String description) async {
     List userMessage = [
       {
         "role": "user",
         "content":
-            "Generate todays workout that keeps progressive overload based on previous exercises in mind in mind, but also recovery. User input: $description. Previous workouts: ${await TrainingLogsStorageManager().fetchItems(30)}. JSON format: {'exercises': [{'name': name of the exercises, 'sets': [{'set':'1', 'amount': 'amount of reps/time', 'unit': 'the unit, seconds/minutes/', 'dose': Use \"First-Time\" for all sets in that exercise if you don't know what weight is appropriate; or weight, or \"None\" for bodyweight exercises', 'dose_unit': 'If they weight is in kilo/meters/km or any other unit'}, {continue for as many sets as recommended}], 'description': explanation for why this exercise was chosen}]}."
+            "Generate todays workout that keeps progressive overload based on previous exercises in mind in mind, but also recovery. Current mood: ${mood[0]}, ${mood[1]}, ${mood[2]} Workout description: $description. Previous workouts: ${await TrainingLogsStorageManager().fetchItems(30)}. JSON format: {'exercises': [{'name': name of the exercises, 'sets': [{'set':'1', 'amount': 'amount of reps/time', 'unit': 'the unit, seconds/minutes/', 'dose': Use \"First-Time\" for all sets in that exercise if you don't know what weight is appropriate; or weight, or \"None\" for bodyweight exercises', 'dose_unit': 'If they weight is in kilo/meters/km or any other unit'}, {continue for as many sets as recommended}], 'description': explanation for why this exercise was chosen}]}."
       }
     ];
     String response = await talkToChatGPT(userMessage);
