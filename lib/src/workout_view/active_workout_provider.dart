@@ -30,9 +30,10 @@ class ActiveWorkoutProvider extends ChangeNotifier {
 
   String get currentWorkoutType => _currentWorkoutType;
   Map<String, dynamic> get currentUserExerciseInput => _currentUserExerciseInput;
+  String get currentWorkoutName => _currentWorkoutName;
 
   String get currentWorkout {
-    if (DateTime.now().difference(_lastGeneratedWorkoutDetails[1]).inHours < 6) {
+    if (DateTime.now().difference(_lastGeneratedWorkoutDetails[1]).inHours > 6) {
       _currentWorkoutName = 'No workout selected';
     }
     return _currentWorkoutName;
@@ -52,7 +53,15 @@ class ActiveWorkoutProvider extends ChangeNotifier {
         workoutDetails["name"] != _lastGeneratedWorkoutDetails[0] ||
         DateTime.now().difference(_lastGeneratedWorkoutDetails[1]).inHours >= 6) {
       _lastGeneratedWorkoutDetails = [workoutDetails["name"], DateTime.now()];
-      _currentExerciseDetails = await assistantService.getActiveAnaerobicWorkout(_currentWorkoutFlex, workoutDetails['description']);
+
+      if (_currentWorkoutType == 'Strength' || _currentWorkoutType == 'Muscle Growth') {
+        _currentExerciseDetails = await assistantService.getActiveAnaerobicWorkout(_currentWorkoutFlex, workoutDetails['description']);
+      } else if (_currentWorkoutType == 'Cardio') {
+        _currentExerciseDetails = await assistantService.getActiveCardioWorkout(_currentWorkoutFlex, workoutDetails['description']);
+      } else {
+        _currentExerciseDetails = await assistantService.getActiveMobilityWorkout(_currentWorkoutFlex, workoutDetails['description']);
+      }
+
       createCurrentUserWorkout(_currentExerciseDetails);
     }
     return _currentExerciseDetails;

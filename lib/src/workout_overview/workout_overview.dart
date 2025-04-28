@@ -80,7 +80,12 @@ class WorkoutOverview extends StatelessWidget {
                               ),
                               onTap: () {
                                 String currentWorkout = context.read<ActiveWorkoutProvider>().currentWorkout;
-                                if (currentWorkout != workout['name']!) {
+
+                                if (currentWorkout == 'No workout selected') {
+                                  context.read<ActiveWorkoutProvider>().setCurrentWorkout(workout['name']!);
+                                  context.read<ActiveWorkoutProvider>().setCurrentWorkoutType(workout['type']!);
+                                  Navigator.restorablePushNamed(context, WorkoutAdaptabilityManager.routeName);
+                                } else if (currentWorkout != workout['name']!) {
                                   showDialog(
                                     context: context,
                                     builder: (context) => AlertDialog(
@@ -105,11 +110,9 @@ class WorkoutOverview extends StatelessWidget {
                                       ],
                                     ),
                                   );
-                                } else if (currentWorkout != 'No workout selected') {
+                                } else {
                                   context.read<ActiveWorkoutProvider>().setCurrentWorkout(workout['name']!);
                                   context.read<ActiveWorkoutProvider>().setCurrentWorkoutType(workout['type']!);
-                                  Navigator.restorablePushNamed(context, WorkoutAdaptabilityManager.routeName);
-                                } else {
                                   Navigator.restorablePushNamed(context, ActiveWorkoutView.routeName);
                                 }
                               },

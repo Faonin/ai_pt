@@ -116,7 +116,7 @@ class WorkoutAdaptabilityManagerState extends State<WorkoutAdaptabilityManager> 
                         );
                         return;
                       }
-                      Navigator.pushNamed(context, ActiveWorkoutView.routeName);
+                      Navigator.pushReplacementNamed(context, ActiveWorkoutView.routeName);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.green,

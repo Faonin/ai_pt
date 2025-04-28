@@ -1,3 +1,4 @@
+import 'package:ai_pt/src/ai_features/chat_messenger.dart';
 import 'package:ai_pt/src/workout_view/active_workout_settings.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pt/src/workout_view/active_workout_provider.dart';
@@ -19,13 +20,15 @@ class ActiveWorkoutView extends StatelessWidget {
     if (isCompleted) {
       // 25% chance to trigger
       final random = Random();
-      if (random.nextDouble() < 0.2) {
-        // Trigger the alert dialog
+      if (random.nextDouble() < 0.1) {
+        // Fetch encouragement message asynchronously and trigger the alert dialog
+        final message = await CustomAssistantService().getEncouragementMessage(exercise["name"].toString());
         showDialog(
+          // ignore: use_build_context_synchronously
           context: context,
           builder: (context) => AlertDialog(
             title: const Text('Set Completed!'),
-            content: const Text('Great job! You completed this set.'),
+            content: Text(message),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(),
@@ -42,7 +45,7 @@ class ActiveWorkoutView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(context.watch<ActiveWorkoutProvider>().currentWorkout),
+        title: Text(context.watch<ActiveWorkoutProvider>().currentWorkoutName),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -78,7 +81,7 @@ class ActiveWorkoutView extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: Text(exercise["name"]),
+                        child: Text(exercise["name"] ?? "No name"),
                       ),
                       IconButton(
                         icon: const Icon(Icons.info_outline),
