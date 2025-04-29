@@ -83,7 +83,7 @@ class Dashboard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: 16.0,
-              vertical: 8.0,
+              vertical: 120.0,
             ),
             child: ElevatedButton.icon(
               onPressed: _showNotification,
