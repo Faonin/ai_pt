@@ -5,6 +5,7 @@ import 'package:ai_pt/src/workout_view/active_workout_settings.dart';
 import 'package:ai_pt/src/workout_overview/workout_adaptability_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import 'dashboard/dashboard_view.dart';
 import 'dashboard/dashboard_details.dart';
@@ -17,9 +18,11 @@ class MyApp extends StatelessWidget {
   const MyApp({
     super.key,
     required this.settingsController,
+    required this.notificationsPlugin,
   });
 
   final SettingsController settingsController;
+  final FlutterLocalNotificationsPlugin notificationsPlugin;
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +57,9 @@ class MyApp extends StatelessWidget {
                       return ActiveWorkoutSettings();
                     case Dashboard.routeName:
                     default:
-                      return const Dashboard();
+                      return Dashboard(
+                        notificationsPlugin: notificationsPlugin,
+                      );
                   }
                 },
               );
