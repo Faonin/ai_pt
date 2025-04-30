@@ -1,5 +1,5 @@
 import 'package:ai_pt/src/ai_features/chat_messenger.dart';
-import 'package:ai_pt/src/workout_view/active_workout_settings.dart';
+import 'package:ai_pt/src/workout_view/active_workout_settings_view.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_pt/src/workout_view/active_workout_provider.dart';
 import 'package:provider/provider.dart';

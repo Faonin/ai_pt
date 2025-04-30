@@ -1,6 +1,6 @@
 import 'package:ai_pt/src/storage_manager/workout_storage.dart';
 import 'package:ai_pt/src/workout_creation/workout_creation_view.dart';
-import 'package:ai_pt/src/workout_overview/workout_adaptability_manager.dart';
+import 'package:ai_pt/src/workout_overview/workout_adaptability_manager_view.dart';
 import 'package:ai_pt/src/workout_view/active_workout_provider.dart';
 import 'package:ai_pt/src/workout_view/active_workout_view.dart';
 import 'package:flutter/material.dart';
