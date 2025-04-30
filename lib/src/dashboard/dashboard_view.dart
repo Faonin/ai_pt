@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import '../settings/settings_view.dart';
 import 'dashboard_item_class.dart';
 import '../workout_overview/workout_overview.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 /// Displays a list of SampleItems and includes a notification button.
 class Dashboard extends StatelessWidget {
@@ -15,33 +14,11 @@ class Dashboard extends StatelessWidget {
       SampleItem("Your Weight"),
       SampleItem("Your Mobility"),
     ],
-    required this.notificationsPlugin,
   });
 
   static const routeName = '/';
 
   final List<SampleItem> items;
-  final FlutterLocalNotificationsPlugin notificationsPlugin;
-
-  /// Helper to show a notification
-  Future<void> _showNotification() async {
-    const androidDetails = AndroidNotificationDetails(
-      'dashboard_channel',
-      'Dashboard Notifications',
-      channelDescription: 'Notifications from the dashboard',
-      importance: Importance.defaultImportance,
-      priority: Priority.defaultPriority,
-      icon: 'ic_notification',
-    );
-    const platformDetails = NotificationDetails(android: androidDetails);
-
-    await notificationsPlugin.show(
-      0,
-      'Hello from Dashboard',
-      'This is a test notification',
-      platformDetails,
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -78,17 +55,6 @@ class Dashboard extends StatelessWidget {
                   ),
                 );
               },
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 120.0,
-            ),
-            child: ElevatedButton.icon(
-              onPressed: _showNotification,
-              icon: const Icon(Icons.notifications),
-              label: const Text('Send Notification'),
             ),
           ),
         ],

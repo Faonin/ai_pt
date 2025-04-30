@@ -110,17 +110,16 @@ class ActiveWorkoutProvider extends ChangeNotifier {
       for (var exercise in _currentUserExerciseInput["exercises"]) {
         for (var set in exercise["sets"]) {
           TrainingLogsStorageManager().addItem(
-              _currentWorkoutName, // program
-              _currentWorkoutType, // workoutType
-              DateTime.now().toIso8601String(), // date
-              exercise["name"], // exercise
-              set["set"].toString(), // set
-              set["amount"].toString(), // amount
-              set["unit"], // unit
-              set.containsKey("dose") ? set["dose"].toString() : "", // dose
-              set.containsKey("dose_unit") ? set["dose_unit"].toString() : "", // dose
-              set.containsKey("RPE") ? set["RPE"].toString() : "" // rpe
-              );
+              _currentWorkoutName,
+              _currentWorkoutType,
+              DateTime.now().toIso8601String(),
+              exercise["name"],
+              set["set"].toString(),
+              set["amount"].toString(),
+              set["unit"],
+              set.containsKey("dose") ? set["dose"].toString() : "",
+              set.containsKey("dose_unit") ? set["dose_unit"].toString() : "",
+              set.containsKey("RPE") ? set["RPE"].toString() : "");
         }
       }
     }

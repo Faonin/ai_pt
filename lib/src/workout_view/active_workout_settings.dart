@@ -17,7 +17,7 @@ class ActiveWorkoutSettings extends StatelessWidget {
       body: Center(
         child: Text(
           "WIP",
-          style: TextStyle(fontSize: 48), // Increased font size
+          style: TextStyle(fontSize: 48),
         ),
       ),
       bottomNavigationBar: SafeArea(
@@ -56,7 +56,7 @@ class ActiveWorkoutSettings extends StatelessWidget {
                           );
                         },
                       ) ??
-                      false; // Handle null case
+                      false;
 
                   if (confirmed && context.mounted) {
                     final currentWorkout = context.read<ActiveWorkoutProvider>().currentWorkout;

@@ -59,6 +59,17 @@ class CustomAssistantService {
     return jsonDecode(await talkToChatGPT(userMessage))["message"];
   }
 
+  Future<String> getNotificationMessage() async {
+    List userMessage = [
+      {
+        "role": "user",
+        "content":
+            "Generate a one sentence motivational message to keep the user motivated to keep pushing them self. JSON format: {'message': 'message'}"
+      }
+    ];
+    return jsonDecode(await talkToChatGPT(userMessage))["message"];
+  }
+
   Future<Map<String, dynamic>> getActiveAnaerobicWorkout(List<String> mood, String description) async {
     List userMessage = [
       {

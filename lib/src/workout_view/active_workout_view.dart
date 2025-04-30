@@ -14,14 +14,11 @@ class ActiveWorkoutView extends StatelessWidget {
     final setDetails = exercise["sets"][setIndex];
     final userSet = userExercise["sets"][setIndex];
 
-    // Check if "amount" is filled and, if required, "dose" is filled.
     final isCompleted = userSet["amount"] != null && (setDetails["dose"] == "None" || userSet["dose"] != null);
 
     if (isCompleted) {
-      // 25% chance to trigger
       final random = Random();
       if (random.nextDouble() < 0.1) {
-        // Fetch encouragement message asynchronously and trigger the alert dialog
         final message = await CustomAssistantService().getEncouragementMessage(exercise["name"].toString());
         showDialog(
           // ignore: use_build_context_synchronously
@@ -69,7 +66,7 @@ class ActiveWorkoutView extends StatelessWidget {
           final currentUserExerciseInput = context.read<ActiveWorkoutProvider>().currentUserExerciseInput;
 
           return ListView.builder(
-            padding: const EdgeInsets.only(bottom: 160), // Prevent hiding behind the floating button
+            padding: const EdgeInsets.only(bottom: 160),
             itemCount: exercises.length,
             itemBuilder: (context, index) {
               final exercise = exercises[index];
@@ -104,7 +101,7 @@ class ActiveWorkoutView extends StatelessWidget {
                     ],
                   ),
                 ),
-                initiallyExpanded: index == 0, // Expand the first item by default
+                initiallyExpanded: index == 0,
                 children: [
                   for (var setIndex = 0; setIndex < exercise["sets"].length; setIndex++)
                     Padding(
@@ -220,8 +217,8 @@ class ActiveWorkoutView extends StatelessWidget {
                       onPressed: () {
                         context.read<ActiveWorkoutProvider>().saveCurrentUserWorkout();
                         Navigator.of(context)
-                          ..pop() // Close the dialog
-                          ..pop(); // Close the workout view
+                          ..pop()
+                          ..pop();
                       },
                       child: const Text('Yes, finish workout'),
                     ),
