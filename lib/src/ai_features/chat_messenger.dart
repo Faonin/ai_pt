@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:ai_pt/src/storage_manager/workout_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:ai_pt/src/storage_manager/training_logs_storage_manager.dart';
@@ -25,7 +26,8 @@ class CustomAssistantService {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> data = jsonDecode(response.body);
+        final decodedBody = utf8.decode(response.bodyBytes);
+        final Map<String, dynamic> data = jsonDecode(decodedBody);
         return data['choices'][0]['message']['content'] ?? "No response";
       } else {
         final Map<String, dynamic> errorData = jsonDecode(response.body);
@@ -59,12 +61,12 @@ class CustomAssistantService {
     return jsonDecode(await talkToChatGPT(userMessage))["message"];
   }
 
-  Future<String> getNotificationMessage() async {
+  Future<String> getNotificationMessage(String timeOfDay) async {
     List userMessage = [
       {
         "role": "user",
         "content":
-            "Generate a one sentence motivational message to keep the user motivated to keep pushing them self. JSON format: {'message': 'message'}"
+            "Generate a one manipulative message that will be sent as a notification that motivates the user to work towards their workout goals. Time of day $timeOfDay, current active workout descriptions ${await WorkoutStorageManager().fetchWorkoutDescriptions()}. JSON format: {'message': 'message'}"
       }
     ];
     return jsonDecode(await talkToChatGPT(userMessage))["message"];

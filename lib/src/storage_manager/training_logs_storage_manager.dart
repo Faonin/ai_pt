@@ -79,6 +79,16 @@ class TrainingLogsStorageManager {
     );
   }
 
+  Future<List<Map<String, dynamic>>> fetchTodayItems() async {
+    final all = await fetchItems(10);
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+    return all.where((log) {
+      final d = DateTime.parse(log['date'] as String);
+      return DateTime(d.year, d.month, d.day) == today;
+    }).toList();
+  }
+
   // Close the database
   Future<void> closeDatabase() async {
     final db = _database;

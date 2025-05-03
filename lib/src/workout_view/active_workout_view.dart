@@ -18,7 +18,7 @@ class ActiveWorkoutView extends StatelessWidget {
 
     if (isCompleted) {
       final random = Random();
-      if (random.nextDouble() < 0.1) {
+      if (random.nextDouble() < 0.05) {
         final message = await CustomAssistantService().getEncouragementMessage(exercise["name"].toString());
         showDialog(
           // ignore: use_build_context_synchronously

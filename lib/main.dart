@@ -6,9 +6,6 @@ import 'src/notifications/notification_manager.dart';
 import 'src/settings/settings_controller.dart';
 import 'src/settings/settings_service.dart';
 
-//final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-
-/// App entrypoint
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
