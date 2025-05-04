@@ -13,6 +13,7 @@ class ActiveWorkoutProvider extends ChangeNotifier {
   late Map<String, dynamic> _currentExerciseDetails = {};
   late Map<String, dynamic> _currentUserExerciseInput = {};
   List<dynamic> _lastGeneratedWorkoutDetails = ["", DateTime.fromMillisecondsSinceEpoch(0)]; // [workoutName, lastUpdate]
+  String _chatResponse = '';
 
   void setCurrentWorkout(String workout) {
     _currentWorkoutName = workout;
@@ -28,6 +29,7 @@ class ActiveWorkoutProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  String get chatResponse => _chatResponse;
   String get currentWorkoutType => _currentWorkoutType;
   Map<String, dynamic> get currentUserExerciseInput => _currentUserExerciseInput;
   String get currentWorkoutName => _currentWorkoutName;
@@ -126,5 +128,15 @@ class ActiveWorkoutProvider extends ChangeNotifier {
     _currentWorkoutName = 'No workout selected';
     _currentExerciseDetails = {};
     _currentUserExerciseInput = {};
+  }
+
+  void getChatResponse(String message, String type) async {
+    _chatResponse = await assistantService.getChatResponse(message, type);
+    notifyListeners();
+  }
+
+  void clearChatResponse() {
+    _chatResponse = 'Hi how can I help you?';
+    notifyListeners();
   }
 }

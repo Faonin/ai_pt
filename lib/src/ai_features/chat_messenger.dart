@@ -107,4 +107,15 @@ class CustomAssistantService {
     String response = await talkToChatGPT(userMessage);
     return jsonDecode(response);
   }
+
+  Future<String> getChatResponse(String message, String type) async {
+    List userMessage = [
+      {
+        "role": "user",
+        "content":
+            "User wants $type of information, and left the following message in the workout app: $message. Generate a JSON response with the following format: {'message': 'message'}."
+      }
+    ];
+    return jsonDecode(await talkToChatGPT(userMessage))["message"];
+  }
 }

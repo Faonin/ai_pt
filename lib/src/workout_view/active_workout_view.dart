@@ -10,6 +10,109 @@ class ActiveWorkoutView extends StatelessWidget {
 
   static const routeName = '/activeWorkoutView';
 
+  void _showChatDialog(BuildContext context) {
+    context.read<ActiveWorkoutProvider>().clearChatResponse();
+    final options = ['Motivation', 'Question', 'Talk'];
+    String message = '';
+    int selectedIndex = 0;
+
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          final response = context.watch<ActiveWorkoutProvider>().chatResponse;
+          return AlertDialog(
+            title: const Text('Chat with AI Assistant'),
+            content: ConstrainedBox(
+              constraints: const BoxConstraints(
+                minWidth: 300,
+                maxWidth: 300,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // <-- Chat bubble starts here
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      margin: const EdgeInsets.only(bottom: 16),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        response.isEmpty ? '...' : response,
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ),
+                  // <-- Chat bubble ends here
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: List.generate(options.length, (i) {
+                      final isSelected = i == selectedIndex;
+                      return GestureDetector(
+                        onTap: () => setState(() => selectedIndex = i),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isSelected ? Colors.black : Colors.transparent,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            options[i],
+                            style: TextStyle(
+                              color: isSelected ? Colors.white : Colors.black,
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    textAlign: TextAlign.center,
+                    decoration: const InputDecoration(
+                      label: Center(child: Text('Type your message here')),
+                    ),
+                    onChanged: (v) => message = v,
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Close'),
+              ),
+              TextButton(
+                onPressed: () {
+                  if (message.isNotEmpty) {
+                    final chosen = options[selectedIndex];
+                    context.read<ActiveWorkoutProvider>().getChatResponse(message, chosen);
+                  }
+                },
+                child: const Text('Send'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   void _handleSetCompletion(BuildContext context, Map<String, dynamic> exercise, int setIndex, Map<String, dynamic> userExercise) async {
     final setDetails = exercise["sets"][setIndex];
     final userSet = userExercise["sets"][setIndex];
@@ -44,6 +147,12 @@ class ActiveWorkoutView extends StatelessWidget {
       appBar: AppBar(
         title: Text(context.watch<ActiveWorkoutProvider>().currentWorkoutName),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.chat_bubble),
+            onPressed: () {
+              _showChatDialog(context);
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () {
