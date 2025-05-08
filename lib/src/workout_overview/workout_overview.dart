@@ -17,13 +17,12 @@ class WorkoutOverview extends StatelessWidget {
   static const routeName = '/workoutView';
 
   // Keep a single future so we don’t refetch unnecessarily.
-  final Future<List<Map<String, String>>> _workoutsFuture =
-      WorkoutStorageManager().fetchItems().then((items) => items
-          .map((item) => {
-                'name': item['name'] ?? 'Unnamed Workout',
-                'type': item['workoutType'] ?? 'default',
-              })
-          .toList());
+  final Future<List<Map<String, String>>> _workoutsFuture = WorkoutStorageManager().fetchItems().then((items) => items
+      .map((item) => {
+            'name': item['name'] ?? 'Unnamed Workout',
+            'type': item['workoutType'] ?? 'default',
+          })
+      .toList());
 
   IconData _iconForType(String type) {
     switch (type) {
@@ -43,17 +42,14 @@ class WorkoutOverview extends StatelessWidget {
   void _onTap(BuildContext context, Map<String, String> workout) {
     final provider = context.read<ActiveWorkoutProvider>();
     final currentlyRunning = provider.currentWorkout;
-    final willSwitch = currentlyRunning != 'No workout selected' &&
-        currentlyRunning != workout['name'];
+    final willSwitch = currentlyRunning != 'No workout selected' && currentlyRunning != workout['name'];
 
     void start() {
       provider.setCurrentWorkout(workout['name']!);
       provider.setCurrentWorkoutType(workout['type']!);
       Navigator.restorablePushNamed(
         context,
-        currentlyRunning == workout['name']
-            ? ActiveWorkoutView.routeName
-            : WorkoutAdaptabilityManager.routeName,
+        currentlyRunning == workout['name'] ? ActiveWorkoutView.routeName : WorkoutAdaptabilityManager.routeName,
       );
     }
 
@@ -62,12 +58,9 @@ class WorkoutOverview extends StatelessWidget {
         context: context,
         builder: (_) => AlertDialog(
           title: const Text('Switch Workout?'),
-          content: Text(
-              'Start "${workout['name']}" instead of the current workout?'),
+          content: Text('Start "${workout['name']}" instead of the current workout?'),
           actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
             TextButton(
                 onPressed: () {
                   Navigator.pop(context);
@@ -99,8 +92,7 @@ class WorkoutOverview extends StatelessWidget {
           }
           final workouts = snapshot.data ?? [];
           if (workouts.isEmpty) {
-            return const Center(
-                child: Text('You haven\'t created any workouts yet.'));
+            return const Center(child: Text('You haven\'t created any workouts yet.'));
           }
 
           return ListView.separated(
@@ -122,8 +114,7 @@ class WorkoutOverview extends StatelessWidget {
                     ),
                     title: Text(
                       workout['name']!,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.w500),
+                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
                     ),
                     trailing: const Icon(Icons.chevron_right_rounded),
                   ),
@@ -134,8 +125,7 @@ class WorkoutOverview extends StatelessWidget {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.restorablePushNamed(
-            context, WorkoutCreationView.routeName),
+        onPressed: () => Navigator.restorablePushNamed(context, WorkoutCreationView.routeName),
         tooltip: 'Create Workout',
         child: const Icon(
           Icons.add,

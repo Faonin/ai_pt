@@ -54,7 +54,6 @@ class ActiveWorkoutView extends StatelessWidget {
                       ),
                     ),
                   ),
-                  // <-- Chat bubble ends here
 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,

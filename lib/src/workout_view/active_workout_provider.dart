@@ -55,6 +55,7 @@ class ActiveWorkoutProvider extends ChangeNotifier {
         workoutDetails["name"] != _lastGeneratedWorkoutDetails[0] ||
         DateTime.now().difference(_lastGeneratedWorkoutDetails[1]).inHours >= 6) {
       _lastGeneratedWorkoutDetails = [workoutDetails["name"], DateTime.now()];
+      print(_currentWorkoutType);
 
       if (_currentWorkoutType == 'Strength' || _currentWorkoutType == 'Muscle Growth') {
         _currentExerciseDetails = await assistantService.getActiveAnaerobicWorkout(_currentWorkoutFlex, workoutDetails['description']);
