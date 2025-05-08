@@ -6,11 +6,6 @@ import 'package:ai_pt/src/workout_view/active_workout_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-/// Vertically‑scrollable list of saved workouts (dark‑/light‑theme friendly).
-/// ----------------------------------------------------------------------------
-/// • Leading icon now has **no background container** – just the glyph itself.
-/// • Card + InkWell give a material ripple on tap.
-/// ----------------------------------------------------------------------------
 class WorkoutOverview extends StatelessWidget {
   WorkoutOverview({super.key});
 

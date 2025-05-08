@@ -29,22 +29,19 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _requestNotificationPermissions() async {
-    // Only request if not already granted
     final status = await Permission.notification.status;
-    if (!status.isGranted) {
-      await Permission.notification.request();
-    }
+    if (!status.isGranted) await Permission.notification.request();
   }
 
   @override
   Widget build(BuildContext context) {
-    final ColorScheme lightScheme = ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.light);
-    final ColorScheme darkScheme = ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark);
+    final lightScheme = ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.light);
+    final darkScheme = ColorScheme.fromSeed(seedColor: Colors.deepPurple, brightness: Brightness.dark);
 
-    ThemeData buildTheme(ColorScheme scheme) => ThemeData(
-          appBarTheme: const AppBarTheme(centerTitle: true),
-          colorScheme: scheme,
+    ThemeData theme(ColorScheme scheme) => ThemeData(
           useMaterial3: true,
+          colorScheme: scheme,
+          appBarTheme: const AppBarTheme(centerTitle: true),
           floatingActionButtonTheme: FloatingActionButtonThemeData(
             backgroundColor: scheme.primary,
             foregroundColor: scheme.onPrimary,
@@ -65,12 +62,12 @@ class _MyAppState extends State<MyApp> {
         builder: (_, __) => MaterialApp(
           debugShowCheckedModeBanner: false,
           restorationScopeId: 'app',
-          theme: buildTheme(lightScheme),
-          darkTheme: buildTheme(darkScheme),
+          theme: theme(lightScheme),
+          darkTheme: theme(darkScheme),
           themeMode: widget.settingsController.themeMode,
           onGenerateRoute: (settings) => MaterialPageRoute(
             settings: settings,
-            builder: (context) {
+            builder: (_) {
               switch (settings.name) {
                 case SettingsView.routeName:
                   return SettingsView(controller: widget.settingsController);
