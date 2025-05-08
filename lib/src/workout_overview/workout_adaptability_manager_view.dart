@@ -9,16 +9,21 @@ class WorkoutAdaptabilityManager extends StatefulWidget {
   static const routeName = '/workout_adaptability_manager';
 
   @override
-  WorkoutAdaptabilityManagerState createState() => WorkoutAdaptabilityManagerState();
+  WorkoutAdaptabilityManagerState createState() =>
+      WorkoutAdaptabilityManagerState();
 }
 
-class WorkoutAdaptabilityManagerState extends State<WorkoutAdaptabilityManager> {
-  final TextEditingController _timeConstraintsController = TextEditingController();
-  final TextEditingController _otherConsiderationsController = TextEditingController();
+class WorkoutAdaptabilityManagerState
+    extends State<WorkoutAdaptabilityManager> {
+  final TextEditingController _timeConstraintsController =
+      TextEditingController();
+  final TextEditingController _otherConsiderationsController =
+      TextEditingController();
   int? _moodRating;
 
   @override
   Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Modify Workout Plan', textAlign: TextAlign.center),
@@ -28,7 +33,8 @@ class WorkoutAdaptabilityManagerState extends State<WorkoutAdaptabilityManager> 
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center, // Center vertically
-            crossAxisAlignment: CrossAxisAlignment.center, // Center horizontally
+            crossAxisAlignment:
+                CrossAxisAlignment.center, // Center horizontally
             children: [
               // Time Constraints text and field
               Align(
@@ -58,15 +64,19 @@ class WorkoutAdaptabilityManagerState extends State<WorkoutAdaptabilityManager> 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: List.generate(5, (index) {
-                  int rating = index + 1;
+                  final rating = index + 1;
+                  final selected = _moodRating == rating;
                   return ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _moodRating = rating;
-                      });
-                    },
+                    onPressed: () => setState(() => _moodRating = rating),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _moodRating == rating ? Colors.blue : Colors.grey,
+                      backgroundColor:
+                          selected ? cs.primary : cs.surfaceContainerHighest,
+                      foregroundColor:
+                          selected ? cs.onPrimary : cs.onSurfaceVariant,
+                      shape: const StadiumBorder(),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
+                      elevation: selected ? 4 : 0,
                     ),
                     child: Text('$rating'),
                   );
@@ -93,12 +103,16 @@ class WorkoutAdaptabilityManagerState extends State<WorkoutAdaptabilityManager> 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    style: TextButton.styleFrom(
+                      backgroundColor:
+                          cs.surfaceVariant, // flat pill-shaped background
+                      foregroundColor: cs
+                          .onSurface, // text color: black in light, white in dark
+                      shape: const StadiumBorder(),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
                     ),
                     child: const Text('Cancel'),
                   ),
@@ -112,14 +126,23 @@ class WorkoutAdaptabilityManagerState extends State<WorkoutAdaptabilityManager> 
 
                       if (_moodRating == null) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text("Please fill in how your feeling.")),
+                          const SnackBar(
+                              content:
+                                  Text("Please fill in how your feeling.")),
                         );
                         return;
                       }
-                      Navigator.pushReplacementNamed(context, ActiveWorkoutView.routeName);
+                      Navigator.pushReplacementNamed(
+                          context, ActiveWorkoutView.routeName);
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
+                      backgroundColor: cs.primary,
+                      foregroundColor: cs.onPrimary,
+                      shape: const StadiumBorder(),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
                     ),
                     child: const Text('Next'),
                   ),

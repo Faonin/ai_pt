@@ -33,7 +33,7 @@ class SettingsView extends StatelessWidget {
                   onPressed: () {
                     WorkoutManager().getWorkoutDetails('Cardio');
                   },
-                  child: const Text('Test feature'),
+                  child: const Text('Theme'),
                 ),
                 DropdownButton<ThemeMode>(
                   // Read the selected themeMode from the controller
