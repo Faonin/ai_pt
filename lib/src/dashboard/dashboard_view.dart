@@ -17,8 +17,6 @@ class Dashboard extends StatefulWidget {
   DashboardState createState() => DashboardState();
 }
 
-Color get _chartLineColor => const Color(0xFFCE93D8);
-
 class DashboardState extends State<Dashboard> {
   final ScrollController _scrollController = ScrollController();
   final List<int> _timeSpans = [7, 30, 90, 180, 365];
