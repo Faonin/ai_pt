@@ -6,7 +6,7 @@ class WorkoutManager {
   Future<void> createWorkoutPlan(List<Map<String, dynamic>> answeredQuestions) async {
     WorkoutStorageManager().addWorkoutPlan(
       answeredQuestions[0]['answer'],
-      answeredQuestions[0]['answer'],
+      answeredQuestions[1]['answer'],
       "description",
       jsonEncode(answeredQuestions.sublist(2)),
     );

@@ -106,8 +106,7 @@ class WorkoutAdaptabilityManagerState
                   TextButton(
                     onPressed: () => Navigator.of(context).pop(),
                     style: TextButton.styleFrom(
-                      backgroundColor:
-                          cs.surfaceVariant, // flat pill-shaped background
+
                       foregroundColor: cs
                           .onSurface, // text color: black in light, white in dark
                       shape: const StadiumBorder(),

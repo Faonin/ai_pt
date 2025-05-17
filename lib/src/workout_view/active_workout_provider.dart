@@ -55,7 +55,6 @@ class ActiveWorkoutProvider extends ChangeNotifier {
         workoutDetails["name"] != _lastGeneratedWorkoutDetails[0] ||
         DateTime.now().difference(_lastGeneratedWorkoutDetails[1]).inHours >= 6) {
       _lastGeneratedWorkoutDetails = [workoutDetails["name"], DateTime.now()];
-      
 
       if (_currentWorkoutType == 'Strength' || _currentWorkoutType == 'Muscle Growth') {
         _currentExerciseDetails = await assistantService.getActiveAnaerobicWorkout(_currentWorkoutFlex, workoutDetails['description']);
@@ -122,7 +121,7 @@ class ActiveWorkoutProvider extends ChangeNotifier {
               set["unit"],
               set.containsKey("dose") ? set["dose"].toString() : "",
               set.containsKey("dose_unit") ? set["dose_unit"].toString() : "",
-              set.containsKey("RPE") ? set["RPE"].toString() : "");
+              set.containsKey("rpe") ? set["rpe"].toString() : "");
         }
       }
     }

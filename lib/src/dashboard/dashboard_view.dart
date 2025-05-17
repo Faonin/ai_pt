@@ -25,10 +25,7 @@ class DashboardState extends State<Dashboard> {
   late Future<List<Map<String, dynamic>>> _logsFuture;
 
   void _openWorkoutOverview() {
-    Navigator.restorablePushNamed(
-      context,
-      WorkoutOverview.routeName,
-    );
+    Navigator.restorablePushNamed(context, WorkoutOverview.routeName);
   }
 
   @override
@@ -37,8 +34,6 @@ class DashboardState extends State<Dashboard> {
     _loadLogs();
 
     _scrollController.addListener(() {
-      // reverse  = scrolling down  → shrink
-      // forward  = scrolling up    → extend
       final dir = _scrollController.position.userScrollDirection;
       if (dir == ScrollDirection.reverse && _fabExtended) {
         setState(() => _fabExtended = false);
@@ -67,10 +62,7 @@ class DashboardState extends State<Dashboard> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () => Navigator.restorablePushNamed(
-              context,
-              SettingsView.routeName,
-            ),
+            onPressed: () => Navigator.restorablePushNamed(context, SettingsView.routeName),
           ),
         ],
       ),
@@ -80,17 +72,15 @@ class DashboardState extends State<Dashboard> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
-            return Center(child: Text('Error: \${snapshot.error}'));
+            return Center(child: Text('Error: ${snapshot.error}'));
           }
 
           final logs = snapshot.data!;
           if (logs.isEmpty) {
-            return const Center(
-              child: Text('No workouts logged in this period.'),
-            );
+            return const Center(child: Text('No workouts logged in this period.'));
           }
 
-          // Aggregate data
+          // ----------------------------------------------------------------- Aggregate data for charts
           final Map<DateTime, int> counts = {};
           final Map<DateTime, double> volume = {};
           final Map<DateTime, double> rpeSum = {};
@@ -109,20 +99,19 @@ class DashboardState extends State<Dashboard> {
           }
 
           final sortedDates = counts.keys.toList()..sort();
-          final countData = sortedDates
-              .map((d) => ChartSampleData(d, counts[d]!.toDouble()))
-              .toList();
-          final volumeData =
-              sortedDates.map((d) => ChartSampleData(d, volume[d]!)).toList();
-          final rpeData = sortedDates
-              .map((d) => ChartSampleData(d, rpeSum[d]! / rpeCount[d]!))
-              .toList();
+          final countData = sortedDates.map((d) => ChartSampleData(d, counts[d]!.toDouble())).toList();
+          final volumeData = sortedDates.map((d) => ChartSampleData(d, volume[d]!)).toList();
+          final rpeData = sortedDates.map((d) => ChartSampleData(d, rpeSum[d]! / rpeCount[d]!)).toList();
+
+          // History logs newest → oldest
+          final historyLogs = List<Map<String, dynamic>>.from(logs)
+            ..sort((a, b) => DateTime.parse(b['date'] as String).compareTo(DateTime.parse(a['date'] as String)));
 
           return Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
               children: [
-                // Time span selector with dynamic label
+                // -------------------------------------------------- Time span selector
                 Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
@@ -130,12 +119,7 @@ class DashboardState extends State<Dashboard> {
                     const SizedBox(width: 8),
                     DropdownButton<int>(
                       value: _selectedDays,
-                      items: _timeSpans
-                          .map((d) => DropdownMenuItem(
-                                value: d,
-                                child: Text('$d days'),
-                              ))
-                          .toList(),
+                      items: _timeSpans.map((d) => DropdownMenuItem(value: d, child: Text('$d days'))).toList(),
                       onChanged: (val) {
                         if (val != null) {
                           setState(() {
@@ -148,26 +132,26 @@ class DashboardState extends State<Dashboard> {
                   ],
                 ),
                 const SizedBox(height: 8),
+
+                // -------------------------------------------------- Scrollable content
                 Expanded(
                   child: ListView(
                     controller: _scrollController,
                     children: [
+                      // ----------------------------- Charts FIRST
                       const ChartSectionTitle('Workouts per Day'),
                       SizedBox(
                         height: 200,
                         child: SfCartesianChart(
-                          primaryXAxis: DateTimeAxis(
-                            dateFormat: DateFormat.Md(),
-                          ),
+                          primaryXAxis: DateTimeAxis(dateFormat: DateFormat.Md()),
                           series: <CartesianSeries<ChartSampleData, DateTime>>[
                             LineSeries<ChartSampleData, DateTime>(
                               dataSource: countData,
                               xValueMapper: (d, _) => d.x,
                               yValueMapper: (d, _) => d.y,
-                              markerSettings:
-                                  const MarkerSettings(isVisible: true),
+                              markerSettings: const MarkerSettings(isVisible: true),
                               color: const Color.fromARGB(255, 193, 11, 248),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -176,18 +160,15 @@ class DashboardState extends State<Dashboard> {
                       SizedBox(
                         height: 200,
                         child: SfCartesianChart(
-                          primaryXAxis: DateTimeAxis(
-                            dateFormat: DateFormat.Md(),
-                          ),
+                          primaryXAxis: DateTimeAxis(dateFormat: DateFormat.Md()),
                           series: <CartesianSeries<ChartSampleData, DateTime>>[
                             LineSeries<ChartSampleData, DateTime>(
                               dataSource: volumeData,
                               xValueMapper: (d, _) => d.x,
                               yValueMapper: (d, _) => d.y,
-                              markerSettings:
-                                  const MarkerSettings(isVisible: true),
+                              markerSettings: const MarkerSettings(isVisible: true),
                               color: const Color.fromARGB(255, 193, 11, 248),
-                            )
+                            ),
                           ],
                         ),
                       ),
@@ -196,39 +177,33 @@ class DashboardState extends State<Dashboard> {
                       SizedBox(
                         height: 200,
                         child: SfCartesianChart(
-                          primaryXAxis: DateTimeAxis(
-                            dateFormat: DateFormat.Md(),
-                          ),
+                          primaryXAxis: DateTimeAxis(dateFormat: DateFormat.Md()),
                           series: <CartesianSeries<ChartSampleData, DateTime>>[
                             LineSeries<ChartSampleData, DateTime>(
                               dataSource: rpeData,
                               xValueMapper: (d, _) => d.x,
                               yValueMapper: (d, _) => d.y,
-                              markerSettings:
-                                  const MarkerSettings(isVisible: true),
+                              markerSettings: const MarkerSettings(isVisible: true),
                               color: const Color.fromARGB(255, 193, 11, 248),
-                            )
+                            ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      // Detailed list
+                      const SizedBox(height: 24),
+
+                      // ----------------------------- History (newest first)
                       const ChartSectionTitle('Workout History'),
-                      ...logs.map((logEntry) {
+                      ...historyLogs.map((logEntry) {
                         final exercise = logEntry['exercise'] as String;
-                        final dateStr = logEntry['date'] as String;
-                        final dateTime = DateTime.parse(dateStr);
-                        final formattedDate =
-                            DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
+                        final dateTime = DateTime.parse(logEntry['date'] as String);
+                        final formattedDate = DateFormat('yyyy-MM-dd HH:mm').format(dateTime);
                         final sets = logEntry['sets'] as String;
                         final amount = logEntry['amount'] as String;
                         final unit = logEntry['unit'] as String;
                         return ListTile(
-                          leading: const CircleAvatar(
-                              child: Icon(Icons.fitness_center)),
+                          leading: const CircleAvatar(child: Icon(Icons.fitness_center)),
                           title: Text(exercise),
-                          subtitle: Text(
-                              '$formattedDate . $sets sets x $amount $unit'),
+                          subtitle: Text('$formattedDate · Set number $sets for $amount $unit'),
                         );
                       }),
                     ],
@@ -242,23 +217,14 @@ class DashboardState extends State<Dashboard> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: ScrollingFabAnimated(
         color: Theme.of(context).colorScheme.primary,
-        icon: Icon(
-          Icons.add,
-          color: Theme.of(context).colorScheme.onSecondary,
-        ),
-        text: Text(
-          'Start Workout',
-          style: TextStyle(
-            color: Theme.of(context).colorScheme.onSecondary,
-            fontSize: 16,
-          ),
-        ),
+        icon: Icon(Icons.add, color: Theme.of(context).colorScheme.onSecondary),
+        text: Text('Start Workout', style: TextStyle(color: Theme.of(context).colorScheme.onSecondary, fontSize: 16)),
         onPress: _openWorkoutOverview,
         scrollController: _scrollController,
         inverted: false,
         animateIcon: false,
-        width: 170.0, // expanded width
-        height: 56.0, // also collapsed diameter
+        width: 170.0,
+        height: 56.0,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
         radius: 20.0,
@@ -282,9 +248,6 @@ class ChartSectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
         padding: const EdgeInsets.symmetric(vertical: 4.0),
-        child: Text(
-          text,
-          style: Theme.of(context).textTheme.titleMedium,
-        ),
+        child: Text(text, style: Theme.of(context).textTheme.titleMedium),
       );
 }

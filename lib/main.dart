@@ -9,14 +9,14 @@ import 'src/settings/settings_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Load any key-value pairs you keep in .env
+  // Load .env key‑value pairs (API keys, endpoints, …)
   await dotenv.load(fileName: '.env');
 
-  // User-configurable settings (theme, locale, etc.)
+  // User‑configurable UI settings
   final settingsController = SettingsController(SettingsService());
   await settingsController.loadSettings();
 
-  // Kick off the foreground/background notification service
+  // Start the foreground/background notification service
   await NotificationManager.initializeService();
 
   runApp(MyApp(settingsController: settingsController));

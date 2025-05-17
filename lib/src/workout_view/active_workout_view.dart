@@ -1,18 +1,25 @@
-import 'package:ai_pt/src/ai_features/chat_messenger.dart';
-import 'package:ai_pt/src/workout_view/active_workout_settings_view.dart';
-import 'package:flutter/material.dart';
-import 'package:ai_pt/src/workout_view/active_workout_provider.dart';
-import 'package:provider/provider.dart';
 import 'dart:math';
 
+import 'package:ai_pt/src/ai_features/chat_messenger.dart';
+import 'package:ai_pt/src/workout_view/active_workout_provider.dart';
+import 'package:ai_pt/src/workout_view/active_workout_settings_view.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+/// Active workout screen – now uses a `StatefulBuilder` around each RPE picker
+/// so the dropdown updates immediately without converting the whole view to a
+/// `StatefulWidget`.
 class ActiveWorkoutView extends StatelessWidget {
   const ActiveWorkoutView({super.key});
 
   static const routeName = '/activeWorkoutView';
 
+  //--------------------------------------------------------------------------
+  // Chat overlay
+  //--------------------------------------------------------------------------
   void _showChatDialog(BuildContext context) {
     context.read<ActiveWorkoutProvider>().clearChatResponse();
-    final options = ['Motivation', 'Question', 'Talk'];
+    const options = ['Motivation', 'Question', 'Talk'];
     String message = '';
     int selectedIndex = 0;
 
@@ -24,21 +31,15 @@ class ActiveWorkoutView extends StatelessWidget {
           return AlertDialog(
             title: const Text('Chat with AI Assistant'),
             content: ConstrainedBox(
-              constraints: const BoxConstraints(
-                minWidth: 300,
-                maxWidth: 300,
-              ),
+              constraints: const BoxConstraints(minWidth: 300, maxWidth: 300),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // <-- Chat bubble starts here
+                  // Chat bubble
                   Align(
                     alignment: Alignment.centerLeft,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 8,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                       margin: const EdgeInsets.only(bottom: 16),
                       decoration: BoxDecoration(
                         color: Colors.grey.shade200,
@@ -50,11 +51,11 @@ class ActiveWorkoutView extends StatelessWidget {
                       ),
                       child: Text(
                         response.isEmpty ? '...' : response,
-                        style: const TextStyle(fontSize: 16),
+                        style: const TextStyle(fontSize: 16, color: Colors.black),
                       ),
                     ),
                   ),
-
+                  // Quick-select chips
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: List.generate(options.length, (i) {
@@ -62,10 +63,7 @@ class ActiveWorkoutView extends StatelessWidget {
                       return GestureDetector(
                         onTap: () => setState(() => selectedIndex = i),
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 6,
-                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                           decoration: BoxDecoration(
                             color: isSelected ? Colors.black : Colors.transparent,
                             borderRadius: BorderRadius.circular(4),
@@ -93,7 +91,7 @@ class ActiveWorkoutView extends StatelessWidget {
             ),
             actions: [
               TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: () => Navigator.pop(context),
                 child: const Text('Close'),
               ),
               TextButton(
@@ -112,28 +110,23 @@ class ActiveWorkoutView extends StatelessWidget {
     );
   }
 
-  void _handleSetCompletion(BuildContext context, Map<String, dynamic> exercise, int setIndex, Map<String, dynamic> userExercise) async {
-    final setDetails = exercise["sets"][setIndex];
-    final userSet = userExercise["sets"][setIndex];
+  //--------------------------------------------------------------------------
+  // Detect when a set is finished and maybe show an encouragement dialog
+  //--------------------------------------------------------------------------
+  Future<void> _handleSetCompletion(BuildContext context, Map<String, dynamic> exercise, int setIndex, Map<String, dynamic> userEx) async {
+    final setDef = exercise['sets'][setIndex];
+    final userSet = userEx['sets'][setIndex];
+    final completed = userSet['amount'] != null && (setDef['dose'] == 'None' || userSet['dose'] != null);
 
-    final isCompleted = userSet["amount"] != null && (setDetails["dose"] == "None" || userSet["dose"] != null);
-
-    if (isCompleted) {
-      final random = Random();
-      if (random.nextDouble() < 0.05) {
-        final message = await CustomAssistantService().getEncouragementMessage(exercise["name"].toString());
+    if (completed && Random().nextDouble() < 0.05) {
+      final msg = await CustomAssistantService().getEncouragementMessage(exercise['name']);
+      if (context.mounted) {
         showDialog(
-          // ignore: use_build_context_synchronously
           context: context,
-          builder: (context) => AlertDialog(
+          builder: (_) => AlertDialog(
             title: const Text('Set Completed!'),
-            content: Text(message),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(),
-                child: const Text('OK'),
-              ),
-            ],
+            content: Text(msg),
+            actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('OK'))],
           ),
         );
       }
@@ -146,142 +139,119 @@ class ActiveWorkoutView extends StatelessWidget {
       appBar: AppBar(
         title: Text(context.watch<ActiveWorkoutProvider>().currentWorkoutName),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.chat_bubble),
-            onPressed: () {
-              _showChatDialog(context);
-            },
-          ),
+          IconButton(icon: const Icon(Icons.chat_bubble), onPressed: () => _showChatDialog(context)),
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.restorablePushNamed(context, ActiveWorkoutSettings.routeName);
-            },
+            onPressed: () => Navigator.restorablePushNamed(context, ActiveWorkoutSettings.routeName),
           ),
         ],
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: context.read<ActiveWorkoutProvider>().workoutDetails,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
+        builder: (context, snap) {
+          if (snap.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text('Error: ${snapshot.error}'));
-          } else if (!snapshot.hasData || snapshot.data!["exercises"].isEmpty) {
+          }
+          if (snap.hasError) {
+            return Center(child: Text('Error: ${snap.error}'));
+          }
+          if (!snap.hasData || snap.data!['exercises'].isEmpty) {
             return const Center(child: Text('No exercises available.'));
           }
-          final exercises = snapshot.data!["exercises"];
-          final currentUserExerciseInput = context.read<ActiveWorkoutProvider>().currentUserExerciseInput;
+
+          final exercises = snap.data!['exercises'];
+          final userInput = context.read<ActiveWorkoutProvider>().currentUserExerciseInput;
 
           return ListView.builder(
             padding: const EdgeInsets.only(bottom: 160),
             itemCount: exercises.length,
-            itemBuilder: (context, index) {
-              final exercise = exercises[index];
-              final userExercise = currentUserExerciseInput["exercises"][index];
+            itemBuilder: (context, exIdx) {
+              final exercise = exercises[exIdx];
+              final userExercise = userInput['exercises'][exIdx];
 
               return ExpansionTile(
-                title: Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(exercise["name"] ?? "No name"),
+                initiallyExpanded: exIdx == 0,
+                title: Row(
+                  children: [
+                    Expanded(child: Text(exercise['name'] ?? 'No name')),
+                    IconButton(
+                      icon: const Icon(Icons.info_outline),
+                      onPressed: () => showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                          title: const Text('Exercise Info'),
+                          content: Text(exercise['description'] ?? 'No description available.'),
+                          actions: [TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close'))],
+                        ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.info_outline),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: const Text('Exercise Info'),
-                              content: Text(exercise["description"] ?? 'No description available.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text('Close'),
-                                ),
-                              ],
-                            ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-                initiallyExpanded: index == 0,
                 children: [
-                  for (var setIndex = 0; setIndex < exercise["sets"].length; setIndex++)
+                  for (var setIdx = 0; setIdx < exercise['sets'].length; ++setIdx)
                     Padding(
-                      padding: const EdgeInsets.only(left: 32.0, top: 8.0, bottom: 8.0),
+                      padding: const EdgeInsets.only(left: 32, top: 8, bottom: 8),
                       child: Row(
                         children: [
+                          //------------------------------------------------------------------ label
                           Expanded(
                             flex: 2,
-                            child: Text(
-                              'Set ${exercise["sets"][setIndex]["set"]}:',
-                              style: const TextStyle(fontSize: 16),
-                            ),
+                            child: Text('Set ${exercise['sets'][setIdx]['set']}:', style: const TextStyle(fontSize: 16)),
                           ),
+                          //------------------------------------------------------------------ amount
                           Expanded(
                             flex: 3,
-                            child: TextField(
-                              controller: TextEditingController(
-                                text: userExercise["sets"][setIndex]["amount"]?.toString(),
-                              ),
+                            child: TextFormField(
+                              initialValue: userExercise['sets'][setIdx]['amount']?.toString(),
                               decoration: InputDecoration(
-                                labelText: exercise["sets"][setIndex]["unit"].toString().replaceFirst(
-                                      exercise["sets"][setIndex]["unit"][0],
-                                      exercise["sets"][setIndex]["unit"][0].toUpperCase(),
+                                labelText: exercise['sets'][setIdx]['unit'].toString().replaceFirst(
+                                      exercise['sets'][setIdx]['unit'][0],
+                                      exercise['sets'][setIdx]['unit'][0].toUpperCase(),
                                     ),
-                                hintText: exercise["sets"][setIndex]["amount"].toString(),
+                                hintText: exercise['sets'][setIdx]['amount'].toString(),
                                 floatingLabelBehavior: FloatingLabelBehavior.always,
                               ),
                               keyboardType: TextInputType.number,
-                              onChanged: (value) {
-                                userExercise["sets"][setIndex]["amount"] = int.tryParse(value);
-                                _handleSetCompletion(context, exercise, setIndex, userExercise);
+                              onChanged: (v) {
+                                userExercise['sets'][setIdx]['amount'] = int.tryParse(v);
+                                _handleSetCompletion(context, exercise, setIdx, userExercise);
                               },
                             ),
                           ),
                           const SizedBox(width: 16),
-                          if (exercise["sets"][setIndex]["dose"] != "None")
+                          //------------------------------------------------------------------ dose (optional)
+                          if (exercise['sets'][setIdx]['dose'] != 'None')
                             Expanded(
                               flex: 3,
-                              child: TextField(
-                                controller: TextEditingController(
-                                  text: userExercise["sets"][setIndex]["dose"]?.toString(),
-                                ),
+                              child: TextFormField(
+                                initialValue: userExercise['sets'][setIdx]['dose']?.toString(),
                                 decoration: InputDecoration(
-                                  labelText: exercise["sets"][setIndex]["dose_unit"].toString(),
-                                  hintText: exercise["sets"][setIndex]["dose"].toString(),
+                                  labelText: exercise['sets'][setIdx]['dose_unit'].toString(),
+                                  hintText: exercise['sets'][setIdx]['dose'].toString(),
                                   floatingLabelBehavior: FloatingLabelBehavior.always,
                                 ),
                                 keyboardType: TextInputType.number,
-                                onChanged: (value) {
-                                  userExercise["sets"][setIndex]["dose"] = int.tryParse(value);
-                                  _handleSetCompletion(context, exercise, setIndex, userExercise);
+                                onChanged: (v) {
+                                  userExercise['sets'][setIdx]['dose'] = v;
+                                  _handleSetCompletion(context, exercise, setIdx, userExercise);
                                 },
                               ),
                             ),
                           const SizedBox(width: 16),
                           Expanded(
                             flex: 2,
-                            child: DropdownButtonFormField<int>(
-                              decoration: const InputDecoration(
-                                labelText: 'RPE',
+                            child: StatefulBuilder(
+                              builder: (context, dropSetState) => DropdownButtonFormField<int?>(
+                                decoration: const InputDecoration(labelText: 'RPE'),
+                                value: userExercise['sets'][setIdx]['rpe'],
+                                items: [
+                                  DropdownMenuItem(value: null, child: Text('-')),
+                                  ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((v) => DropdownMenuItem(value: v, child: Text('$v'))),
+                                ],
+                                onChanged: (val) {
+                                  dropSetState(() => userExercise['sets'][setIdx]['rpe'] = val);
+                                },
                               ),
-                              value: userExercise["sets"][setIndex]["rpe"],
-                              items: List.generate(
-                                10,
-                                (rpe) => DropdownMenuItem(
-                                  value: rpe + 1,
-                                  child: Text((rpe + 1).toString()),
-                                ),
-                              ),
-                              onChanged: (value) {
-                                userExercise["sets"][setIndex]["rpe"] = value;
-                              },
                             ),
                           ),
                         ],
@@ -297,58 +267,47 @@ class ActiveWorkoutView extends StatelessWidget {
       floatingActionButton: SizedBox(
         width: 350,
         child: FloatingActionButton(
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          tooltip: 'Finish Workout',
+          child: const FittedBox(child: Text('Done', style: TextStyle(fontSize: 18))),
           onPressed: () {
-            final currentUserExerciseInput = context.read<ActiveWorkoutProvider>().currentUserExerciseInput;
-            bool incomplete = false;
+            final input = context.read<ActiveWorkoutProvider>().currentUserExerciseInput;
+            final incomplete = (input['exercises'] as List)
+                .any((ex) => (ex['sets'] as List).any((set) => (set['amount'] == null || (set.containsKey('dose') && set['dose'] == null))));
 
-            for (final exercise in currentUserExerciseInput["exercises"]) {
-              for (final set in exercise["sets"]) {
-                if (set["amount"] == null || (set.containsKey("dose") && set["dose"] == null)) {
-                  incomplete = true;
-                  break;
-                }
-              }
-              if (incomplete) break;
-            }
             if (incomplete) {
               showDialog(
                 context: context,
-                builder: (context) => AlertDialog(
+                builder: (_) => AlertDialog(
                   title: const Text('Incomplete Workout'),
-                  content: const Text('Some fields are still empty. Are you sure you want to finish the workout without completing all fields?'),
+                  content: const Text('Some fields are still empty. Finish anyway?'),
                   actions: [
-                    TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text('Cancel'),
-                    ),
+                    TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
                     TextButton(
                       onPressed: () {
                         context.read<ActiveWorkoutProvider>().saveCurrentUserWorkout();
-                        Navigator.of(context)
-                          ..pop()
-                          ..pop();
+                        if (context.mounted) {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            '/', // route name of your front page
+                            (Route<dynamic> _) => false,
+                          );
+                        }
                       },
-                      child: const Text('Yes, finish workout'),
+                      child: const Text('Yes, finish'),
                     ),
                   ],
                 ),
               );
-              return;
             } else {
               context.read<ActiveWorkoutProvider>().saveCurrentUserWorkout();
-              Navigator.pop(context);
+              if (context.mounted) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/', // route name of your front page
+                  (Route<dynamic> _) => false,
+                );
+              }
             }
           },
-          tooltip: 'Finish Workout',
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: FittedBox(
-            child: const Text(
-              "Done",
-              style: TextStyle(fontSize: 18),
-            ),
-          ),
         ),
       ),
     );
